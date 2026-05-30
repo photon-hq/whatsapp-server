@@ -1,0 +1,20 @@
+name: PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  swift-pkg:
+    uses: photon-hq/buildspace/.github/workflows/swift-pkg-pr.yml@main
+    permissions:
+      pull-requests: write
+      contents: read
+    with:
+      package-name: whatsapp-server
+      identifier: codes.photon.whatsapp-server
+      scripts-path: scripts
+      payload-path: payload
+      resource-bundles: ""
+    secrets: inherit

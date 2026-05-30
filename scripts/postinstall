@@ -1,0 +1,28 @@
+#!/bin/bash
+set -e
+
+exec >/var/log/whatsapp-server-install.log 2>&1
+
+LABEL="codes.photon.whatsapp-server"
+PLIST="/Library/LaunchAgents/${LABEL}.plist"
+
+chown root:wheel "${PLIST}"
+chmod 644 "${PLIST}"
+
+rm -f /var/log/whatsapp-server.log
+touch /var/log/whatsapp-server.log
+chown root:staff /var/log/whatsapp-server.log
+chmod 664 /var/log/whatsapp-server.log
+
+launchctl bootout "system/${LABEL}" 2>/dev/null || true
+
+# Uses `launchctl asuser <uid> sudo -u <user>` so Prism's --if-user
+# getuid() check sees the correct UID (not root).
+for line in $(dscl . list /Users UniqueID | awk '$2 >= 502 && $2 != 65534 {print $1 ":" $2}'); do
+    USERNAME="${line%%:*}"
+    UID_NUM="${line##*:}"
+    launchctl asuser "${UID_NUM}" sudo -u "${USERNAME}" launchctl bootout "gui/${UID_NUM}/${LABEL}" 2>/dev/null || true
+    launchctl asuser "${UID_NUM}" sudo -u "${USERNAME}" launchctl enable "gui/${UID_NUM}/${LABEL}" 2>/dev/null || true
+    launchctl asuser "${UID_NUM}" sudo -u "${USERNAME}" launchctl bootstrap "gui/${UID_NUM}" "${PLIST}" 2>/dev/null || true
+    launchctl asuser "${UID_NUM}" sudo -u "${USERNAME}" launchctl kickstart -k "gui/${UID_NUM}/${LABEL}" 2>/dev/null || true
+done

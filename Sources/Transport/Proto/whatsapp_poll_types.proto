@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package photon.whatsapp.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option swift_prefix = "PWApp_";
+
+
+message PollChoice {
+
+  int32 index = 1;
+
+  string text = 2;
+
+  int32 vote_count = 3;
+
+}
+
+
+message Poll {
+
+  string poll_id = 1;
+
+  string question = 2;
+
+  repeated PollChoice choices = 3;
+
+  bool allow_multiple_choices = 4;
+
+  bool hide_voter_names = 5;
+
+}
+
+
+message PollChangeEvent {
+
+  string recipient = 1;
+
+  string poll_id = 2;
+
+  google.protobuf.Timestamp occurred_at = 3;
+
+  bool is_from_me = 4;
+
+  oneof change {
+
+    Poll created = 10;
+
+    Poll updated = 11;
+
+    Poll vote_changed = 12;
+
+    Poll choices_changed = 13;
+
+  }
+
+}

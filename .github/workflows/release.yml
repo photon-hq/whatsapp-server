@@ -1,0 +1,22 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  release:
+    uses: photon-hq/buildspace/.github/workflows/swift-release.yml@main
+    with:
+      package-name: whatsapp-server
+      identifier: codes.photon.whatsapp-server
+      scripts-path: scripts
+      payload-path: payload
+      resource-bundles: ""
+      jamf-url: https://photons.jamfcloud.com
+      jamf-package-priority: "10"
+    secrets: inherit

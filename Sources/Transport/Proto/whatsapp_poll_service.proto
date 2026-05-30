@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package photon.whatsapp.v1;
+
+import "google/protobuf/timestamp.proto";
+import "whatsapp_common_types.proto";
+import "whatsapp_poll_types.proto";
+
+option swift_prefix = "PWApp_";
+
+
+service PollService {
+
+  rpc CreatePoll(CreatePollRequest) returns (PollResponse);
+
+  rpc VotePoll(VotePollRequest) returns (PollResponse);
+
+  rpc UnvotePoll(UnvotePollRequest) returns (PollResponse);
+
+  rpc GetPoll(GetPollRequest) returns (PollResponse);
+
+  rpc SubscribePollEvents(SubscribePollEventsRequest) returns (stream SubscribePollEventsResponse);
+
+}
+
+
+message CreatePollRequest {
+
+  string recipient = 1;
+
+  string question = 2;
+
+  repeated string choices = 3;
+
+  bool allow_multiple_choices = 4;
+
+  bool hide_voter_names = 5;
+
+  optional google.protobuf.Timestamp closes_at = 6;
+
+  optional string client_message_id = 100;
+
+}
+
+
+message VotePollRequest {
+
+  string poll_id = 1;
+
+  repeated int32 choice_indexes = 2;
+
+  optional string client_message_id = 100;
+
+}
+
+
+message UnvotePollRequest {
+
+  string poll_id = 1;
+
+  optional string client_message_id = 100;
+
+}
+
+
+message GetPollRequest {
+
+  string poll_id = 1;
+
+}
+
+
+message PollResponse {
+
+  Poll poll = 1;
+
+}
+
+
+message SubscribePollEventsRequest {
+
+  optional string poll_id = 1;
+
+}
+
+
+message SubscribePollEventsResponse {
+
+  optional uint64 sequence = 1;
+
+  oneof payload {
+
+    PollChangeEvent poll_changed = 10;
+
+    Heartbeat heartbeat = 99;
+
+  }
+
+}

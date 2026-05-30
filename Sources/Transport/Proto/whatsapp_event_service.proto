@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package photon.whatsapp.v1;
+
+import "whatsapp_common_types.proto";
+import "whatsapp_message_types.proto";
+import "whatsapp_poll_types.proto";
+
+option swift_prefix = "PWApp_";
+
+
+service EventService {
+
+  rpc CatchUpEvents(CatchUpEventsRequest) returns (stream CatchUpEventsResponse);
+
+}
+
+
+message CatchUpEventsRequest {
+
+  optional uint64 after_sequence = 1;
+
+}
+
+
+message CatchUpEventsComplete {
+
+  uint64 head_sequence = 1;
+
+}
+
+
+message CatchUpEventsResponse {
+
+  optional uint64 sequence = 1;
+
+  oneof payload {
+
+    MessageChangeEvent message_changed = 10;
+
+    PollChangeEvent poll_changed = 12;
+
+    CatchUpEventsComplete complete = 20;
+
+    Heartbeat heartbeat = 99;
+
+  }
+
+}

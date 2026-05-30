@@ -1,0 +1,255 @@
+WhatsApp Server Project File Review
+Date: 2026-05-19
+
+Scope
+- Project root: /Users/lingjue/Downloads/whatsapp/whatsapp-server
+- Inventory command: find . \( -path './.build' -o -path './.swiftpm' -o -path './.git' -o -path './payload' \) -prune -o -type f -print | sed 's#^./##' | sort
+- Excluded generated/cache/runtime folders: .build, .swiftpm, .git, payload
+- Generated Swift files under Sources/Transport/Generated are listed and marked generated; their source of truth is Sources/Transport/Proto plus make proto.
+- This report file is not included in the inventory to avoid self-reference.
+
+Review Rules
+- [x] means file path, responsibility, naming, implementation, and public contract were reviewed and accepted.
+- [generated] means generated output was not hand-reviewed for implementation, but proto source and generation path were reviewed.
+- Any suspicion found during review was fixed before the file was marked [x].
+
+Findings Fixed During This Pass
+- Removed obsolete chat snapshot/cursor code from ChatStorageEventObserver and its stale test helper. Public streams are message/poll only.
+- Made EventLogCodec reject unknown persisted attachment kinds instead of silently mapping them to document.
+- Added MEDIA_KIND_VIDEO to the gRPC media contract, mapped it to Domain.MediaType.video, regenerated proto output, and added a gRPC handler test.
+- Updated message docs that still described stale response semantics. Docs now match the current full-object readback contract.
+- Collapsed mutation policy into a linear ordered pipeline with one current step, DeduplicateClientMessageIdStep; removed action/resource/plan indirection.
+- Removed unused NumberInput.positiveLimit and its orphan test.
+- Removed unused ChatStorageEventObserver/EventRecord fields and duplicate SQL predicates.
+
+Validation
+- Empty directories: 0
+- Duplicate Swift basenames per target/layer: 0
+- Residual scan for TODO/FIXME/legacy/compat/x-idempotency/stale response semantics/ChatSnapshot/chatRows/loadChatSnapshots: 0 matches
+- Residual scan for removed policy artifacts and unused observer fields: 0 production matches
+- swift test: 156 tests, 0 failures
+- swift build -c release: passed
+- Contract matrix added for gRPC input boundaries and full read/write response shape.
+
+Full Inventory And Review
+
+[x] .github/CODEOWNERS - Ownership file is minimal and correct.
+[x] .github/workflows/pr.yml - PR workflow delegates package CI with correct package identity and paths.
+[x] .github/workflows/release.yml - Release workflow is focused on package release and deployment metadata.
+[x] .github/workflows/test.yml - Local test workflow is direct and contains no redundant CI logic.
+[x] Makefile - Single responsibility: proto generation and generated cleanup.
+[x] Package.resolved - Dependency lock file; correct project artifact.
+[x] Package.swift - Four-layer package targets plus app/tests are explicit and dependency direction is clean.
+
+[x] Sources/App/AppConfiguration.swift - Environment parsing is centralized, typed, bounded, and masks secrets in logs.
+[x] Sources/App/AppRuntime.swift - Composition root wires dependencies top-down without application logic leaking upward.
+[x] Sources/App/main.swift - Process bootstrap is linear: config, telemetry/logging, runtime, server lifecycle, shutdown.
+
+[x] Sources/Application/Event/CatchUpEvents.swift - Catch-up is linear: freeze head, replay, project message/poll only.
+[x] Sources/Application/Event/EventService.swift - Holds event service dependencies only.
+
+[x] Sources/Application/Message/GetMessage.swift - Validates id, reads through query port, maps missing to domain notFound.
+[x] Sources/Application/Message/ListMessages.swift - Converts request to query and builds stable page responses.
+[x] Sources/Application/Message/MessageService.swift - Message use-case dependency holder; no transport or storage coupling.
+[x] Sources/Application/Message/Page/MessagePageBuilder.swift - Isolated page output construction.
+[x] Sources/Application/Message/Page/MessagePageInput.swift - Isolated paging/filter validation and token binding.
+[x] Sources/Application/Message/Page/MessagePageTokenCodec.swift - Encodes stable opaque page tokens with scoped payload.
+[x] Sources/Application/Message/SendMediaMessage.swift - Validates input, sends through port, waits for ChatStorage success readback.
+[x] Sources/Application/Message/SendReaction.swift - Validates target/emoji, compares prior receipt, returns refreshed message snapshot.
+[x] Sources/Application/Message/SendTextMessage.swift - Validates structured text/reply/idempotency, sends, verifies successful readback.
+[x] Sources/Application/Message/Stream/MessageEventProjector.swift - Projects only message-domain events with optional recipient scope.
+[x] Sources/Application/Message/SubscribeMessageEvents.swift - Live subscription is a straight subscribe + project path.
+
+[x] Sources/Application/Policy/Mutation/MutationPolicy.swift - Ordered mutation pipeline is linear: steps acquire in array order, body runs once, reservations confirm or release. Current step deduplicates clientMessageId; future abuse limits can append steps without action/plan branching.
+
+[x] Sources/Application/Poll/CreatePoll.swift - Validates natural poll inputs, executes helper mutation, returns ChatStorage poll snapshot.
+[x] Sources/Application/Poll/GetPoll.swift - Validates id and delegates to poll read port.
+[x] Sources/Application/Poll/PollService.swift - Poll use-case dependency holder; no storage/transport logic.
+[x] Sources/Application/Poll/Stream/PollEventProjector.swift - Projects only poll-domain events with optional poll scope.
+[x] Sources/Application/Poll/SubscribePollEvents.swift - Live subscription is a straight subscribe + project path.
+[x] Sources/Application/Poll/UnvotePoll.swift - Validates id, captures previous digest, returns updated poll snapshot.
+[x] Sources/Application/Poll/VotePoll.swift - Validates id/indexes, captures previous digest, returns updated poll snapshot.
+
+[x] Sources/Application/Shared/Input/IdentifierInput.swift - Identifier validation is tiny and reused only where useful.
+[x] Sources/Application/Shared/Input/NumberInput.swift - Numeric validation is explicit by use case.
+[x] Sources/Application/Shared/Input/RecipientInput.swift - Phone recipient rules are clear: ASCII digits, 7-15.
+[x] Sources/Application/Shared/Input/TextInput.swift - Text validation preserves caller whitespace while rejecting blank semantic content.
+[x] Sources/Application/Shared/Input/TimeInput.swift - Date validation is minimal and focused.
+[x] Sources/Application/Shared/ReadbackRetry.swift - Readback retry is centralized and does not hide success semantics.
+
+[x] Sources/Domain/Auth/Models/AuthConstants.swift - Auth constant is isolated from auth logic.
+[x] Sources/Domain/Auth/Models/AuthContext.swift - Auth identity model is small and explicit.
+[x] Sources/Domain/Auth/Protocols/AuthVerifying.swift - Auth verification port is minimal.
+[x] Sources/Domain/Auth/Protocols/BlocklistChecking.swift - Blocklist port is minimal.
+[x] Sources/Domain/Auth/Protocols/ProjectVerifying.swift - Project verification port is minimal.
+[x] Sources/Domain/Auth/Protocols/SharedInstanceChecking.swift - Shared-instance authorization lifecycle port is minimal.
+
+[x] Sources/Domain/Message/Enums/MediaType.swift - Write media type intentionally supports image and video.
+[x] Sources/Domain/Message/Enums/MessageAttachmentKind.swift - Read/event attachment kinds reflect observable WhatsApp storage kinds.
+[x] Sources/Domain/Message/Enums/MessageChange.swift - Message stream union contains only public message changes.
+[x] Sources/Domain/Message/Enums/TextBlockType.swift - Text block model is natural: normal, quote, bullet, numbered.
+[x] Sources/Domain/Message/Enums/TextStyle.swift - Inline text styles are explicit and composable.
+[x] Sources/Domain/Message/Events/MessageEvents.swift - Message event envelope carries routing, source row, time, direction, and change.
+[x] Sources/Domain/Message/Models/ChatMessagesQuery.swift - Internal chat-list query is separated from public request.
+[x] Sources/Domain/Message/Models/ChatMessagesRequest.swift - Public chat-list request is clear and transport-agnostic.
+[x] Sources/Domain/Message/Models/MessageChanges.swift - Message stream payloads are grouped by business change.
+[x] Sources/Domain/Message/Models/MessagePage.swift - Paging cursor/entry/page types are cohesive.
+[x] Sources/Domain/Message/Models/MessageReadback.swift - Readback query/result models are explicit by mutation type.
+[x] Sources/Domain/Message/Models/MessageSnapshot.swift - Full message snapshot matches read/write/stream needs without helper coupling.
+[x] Sources/Domain/Message/Models/RecentMessagesQuery.swift - Internal recent-list query is separated from public request.
+[x] Sources/Domain/Message/Models/RecentMessagesRequest.swift - Public recent-list request is transport-agnostic.
+[x] Sources/Domain/Message/Models/SendMediaMessageCommand.swift - Media command contains only send intent.
+[x] Sources/Domain/Message/Models/SendReactionCommand.swift - Reaction command contains only target and emoji.
+[x] Sources/Domain/Message/Models/SendTextMessageCommand.swift - Text command exposes structured content and plain-text projection.
+[x] Sources/Domain/Message/Models/TextContent.swift - Text blocks/runs represent natural language structure without formatting indexes.
+[x] Sources/Domain/Message/Protocols/MessageMutationReadback.swift - Mutation success evidence is explicit.
+[x] Sources/Domain/Message/Protocols/MessageQuerying.swift - Message read port is clean and database-neutral.
+[x] Sources/Domain/Message/Protocols/SendMediaMessage.swift - Helper send port hides helper transport.
+[x] Sources/Domain/Message/Protocols/SendReaction.swift - Helper reaction port hides helper transport.
+[x] Sources/Domain/Message/Protocols/SendTextMessage.swift - Helper text port returns the helper message id used for readback.
+
+[x] Sources/Domain/Policy/Protocols/DeduplicationChecking.swift - Deduplication port exposes reserve/confirm/release only.
+
+[x] Sources/Domain/Poll/Enums/PollChange.swift - Poll stream union contains only supported poll changes.
+[x] Sources/Domain/Poll/Events/PollEvents.swift - Poll event envelope carries routing, source row, time, direction, and change.
+[x] Sources/Domain/Poll/Models/CreatePollCommand.swift - Poll creation command is direct and natural.
+[x] Sources/Domain/Poll/Models/Poll.swift - Public poll snapshot is compact and complete for current support.
+[x] Sources/Domain/Poll/Models/PollChoice.swift - Poll choice carries index/text/count only.
+[x] Sources/Domain/Poll/Models/PollIdentifier.swift - Cross-device poll stanza matching is isolated.
+[x] Sources/Domain/Poll/Models/PollReadback.swift - Poll mutation readback models are explicit.
+[x] Sources/Domain/Poll/Models/VotePollCommand.swift - Vote command contains poll id and selected indexes.
+[x] Sources/Domain/Poll/Protocols/CreatePoll.swift - Create poll port is minimal.
+[x] Sources/Domain/Poll/Protocols/GetPoll.swift - Get poll port is minimal.
+[x] Sources/Domain/Poll/Protocols/PollMutationReadback.swift - Poll readback port exposes create/current/update evidence.
+[x] Sources/Domain/Poll/Protocols/UnvotePoll.swift - Unvote port is minimal.
+[x] Sources/Domain/Poll/Protocols/VotePoll.swift - Vote port is minimal.
+
+[x] Sources/Domain/Shared/Errors/DomainError.swift - Domain error carries code/message/context without transport coupling.
+[x] Sources/Domain/Shared/Errors/ErrorCode.swift - Error codes map cleanly to public RPC semantics.
+[x] Sources/Domain/Shared/Events/CaughtUpDomainEvent.swift - Catch-up union is message/poll only.
+[x] Sources/Domain/Shared/Events/DomainEvent.swift - Durable domain event union is message/poll only.
+[x] Sources/Domain/Shared/Events/DomainEventEnvelope.swift - Event sequencing envelope is minimal.
+[x] Sources/Domain/Shared/Events/DomainEventStreaming.swift - Event stream port covers publish/replay/resume/cursor only.
+[x] Sources/Domain/Shared/Events/EventObserving.swift - Observer lifecycle port is minimal.
+[x] Sources/Domain/Shared/Events/EventSubscription.swift - AsyncSequence wrapper enables projection without leaking stream internals.
+[x] Sources/Domain/Shared/Events/NamedCursor.swift - Cursor persistence value is minimal.
+
+[x] Sources/Infrastructure/Auth/CachedProjectVerifier.swift - Project verification cache is bounded and scoped.
+[x] Sources/Infrastructure/Auth/CosmosSharedInstanceChecker.swift - Shared instance list polling is isolated and fails closed before first success.
+[x] Sources/Infrastructure/Auth/Ed25519JWTVerifier.swift - JWT verification is local, strict, and auth-specific.
+[x] Sources/Infrastructure/Auth/LightauthBlocklistChecker.swift - Lightauth blocklist HTTP adapter is focused.
+[x] Sources/Infrastructure/Auth/NoOpAuthStubs.swift - Auth-disabled stub is explicit and small.
+[x] Sources/Infrastructure/Auth/SpectrumProjectVerifier.swift - Spectrum project verification HTTP adapter is focused.
+
+[x] Sources/Infrastructure/ChatStorage/ChatStorageDatabase.swift - ChatStorage database opening is isolated.
+[x] Sources/Infrastructure/ChatStorage/ChatStorageRecipient.swift - WhatsApp JID/phone recipient derivation is centralized.
+[x] Sources/Infrastructure/ChatStorage/Observation/ChatStorageEventObserver.swift - Single ChatStorage observer owns row cursor, poll snapshots, receipt snapshots, and WAL/polling trigger; chat-surface and unused row-field residue removed.
+[x] Sources/Infrastructure/ChatStorage/Observation/ChatStorageEventRecord.swift - Raw message row to event candidates is cohesive and only carries fields used by projection.
+[x] Sources/Infrastructure/ChatStorage/Observation/ReceiptInfoParser.swift - Receipt blob parsing is isolated from observer flow.
+[x] Sources/Infrastructure/ChatStorage/Observation/WhatsAppPollSnapshotParser.swift - Poll snapshot decoding is isolated from store/observer flow.
+[x] Sources/Infrastructure/ChatStorage/WhatsAppDate.swift - WhatsApp date conversion is centralized.
+
+[x] Sources/Infrastructure/Core/Encoding/HexBytes.swift - Hex decoding helper is focused.
+[x] Sources/Infrastructure/Core/Encoding/SHA256Hex.swift - Digest helper is focused.
+[x] Sources/Infrastructure/Core/EventStreaming/DomainEventLog.swift - Durable event log persistence is isolated.
+[x] Sources/Infrastructure/Core/EventStreaming/DomainEventStream.swift - Event fanout/replay/cursor logic is cohesive and bounded.
+[x] Sources/Infrastructure/Core/EventStreaming/EventLogCodec.swift - Versioned event codec now strictly rejects unsupported persisted values.
+[x] Sources/Infrastructure/Core/Helper/HelperChannelHandler.swift - Length-prefixed helper socket channel logic is isolated.
+[x] Sources/Infrastructure/Core/Helper/HelperCommandTransport.swift - Helper command transport port is minimal.
+[x] Sources/Infrastructure/Core/Helper/HelperEnvelope.swift - Helper envelope model is focused.
+[x] Sources/Infrastructure/Core/Helper/HelperJSON.swift - Helper response validation is centralized.
+[x] Sources/Infrastructure/Core/Helper/HelperUDSClient.swift - Unix socket helper client owns transport details only.
+[x] Sources/Infrastructure/Core/Helper/JSONValue.swift - JSON value bridge is intentionally local to helper payloads.
+[x] Sources/Infrastructure/Core/ServerDatabase/ServerDatabase.swift - Server DB opening is isolated.
+[x] Sources/Infrastructure/Core/ServerDatabase/ServerMigrations.swift - Server DB schema migration is small and explicit.
+
+[x] Sources/Infrastructure/Message/ChatStorage/ChatStorageMessageMutationReadback.swift - Message mutation success evidence comes from ChatStorage state, not helper acceptance.
+[x] Sources/Infrastructure/Message/ChatStorage/ChatStorageMessageQuerying.swift - Message read queries go directly to ChatStorage.
+[x] Sources/Infrastructure/Message/ChatStorage/ChatStorageMessageRecord.swift - ChatStorage message row materialization is cohesive.
+[x] Sources/Infrastructure/Message/Helper/HelperSendMediaMessage.swift - Media helper adapter stages bytes, sends helper command, and cleans staging.
+[x] Sources/Infrastructure/Message/Helper/HelperSendReaction.swift - Reaction helper adapter maps directly to helper command.
+[x] Sources/Infrastructure/Message/Helper/HelperSendTextMessage.swift - Text helper adapter chooses plain text vs structured text document cleanly.
+[x] Sources/Infrastructure/Message/Helper/HelperTextDocument.swift - Structured text serialization uses block/run semantics and UTF-16 offsets for helper.
+[x] Sources/Infrastructure/Policy/InMemoryDeduplicationChecker.swift - In-memory idempotency is bounded and action-agnostic.
+
+[x] Sources/Infrastructure/Poll/ChatStorage/ChatStoragePollKeyResolver.swift - Cross-device poll id resolution is isolated.
+[x] Sources/Infrastructure/Poll/ChatStorage/ChatStoragePollStore.swift - Poll read/readback is ChatStorage-backed and helper-free.
+[x] Sources/Infrastructure/Poll/Helper/HelperCreatePoll.swift - Create poll helper adapter maps direct user intent.
+[x] Sources/Infrastructure/Poll/Helper/HelperUnvotePoll.swift - Unvote adapter resolves local poll id before helper mutation.
+[x] Sources/Infrastructure/Poll/Helper/HelperVotePoll.swift - Vote adapter resolves local poll id before helper mutation.
+
+[x] Sources/Transport/Error/DomainErrorRPCMapping.swift - Domain errors map to RPC status/messages/metadata consistently.
+[x] Sources/Transport/Error/ErrorToDomainError.swift - Unknown thrown errors are normalized at transport boundary.
+[x] Sources/Transport/Error/PrintableErrorMetadata.swift - Public error metadata is bounded and printable.
+[x] Sources/Transport/Event/EventServiceHandler.swift - Catch-up RPC handler is thin and uses stream heartbeat helper.
+[x] Sources/Transport/Event/EventStreamMapper.swift - Catch-up event mapper delegates to message/poll stream mappers.
+[generated] Sources/Transport/Generated/whatsapp_common_types.grpc.swift - Generated from proto.
+[generated] Sources/Transport/Generated/whatsapp_common_types.pb.swift - Generated from proto.
+[generated] Sources/Transport/Generated/whatsapp_event_service.grpc.swift - Generated from proto.
+[generated] Sources/Transport/Generated/whatsapp_event_service.pb.swift - Generated from proto.
+[generated] Sources/Transport/Generated/whatsapp_message_service.grpc.swift - Generated from proto.
+[generated] Sources/Transport/Generated/whatsapp_message_service.pb.swift - Generated from proto; regenerated after adding MEDIA_KIND_VIDEO.
+[generated] Sources/Transport/Generated/whatsapp_message_types.grpc.swift - Generated from proto.
+[generated] Sources/Transport/Generated/whatsapp_message_types.pb.swift - Generated from proto.
+[generated] Sources/Transport/Generated/whatsapp_poll_service.grpc.swift - Generated from proto.
+[generated] Sources/Transport/Generated/whatsapp_poll_service.pb.swift - Generated from proto.
+[generated] Sources/Transport/Generated/whatsapp_poll_types.grpc.swift - Generated from proto.
+[generated] Sources/Transport/Generated/whatsapp_poll_types.pb.swift - Generated from proto.
+[x] Sources/Transport/Interceptors/AuthInterceptor.swift - Auth interceptor verifies token/blocklist/project/shared instance and records call state.
+[x] Sources/Transport/Interceptors/CallLifecycleInterceptor.swift - Call lifecycle wraps logging/error normalization around every RPC.
+[x] Sources/Transport/Interceptors/CallState.swift - Per-call mutable metadata is locked and task-local.
+[x] Sources/Transport/Logging/RPCLogContext.swift - Request/response logs are structured and sanitized.
+[x] Sources/Transport/Message/MessageMapper.swift - Message proto/domain mapping is strict and now supports image/video media kinds.
+[x] Sources/Transport/Message/MessageServiceHandler.swift - Message RPC handler is thin: proto request to application call to proto response.
+[x] Sources/Transport/Message/MessageStreamMapper.swift - Message stream mapper exposes clear text/attachment/reaction/receipt payloads.
+[x] Sources/Transport/Poll/PollMapper.swift - Poll proto/domain mapping is strict about int32 ranges.
+[x] Sources/Transport/Poll/PollServiceHandler.swift - Poll RPC handler is thin: proto request to application call to proto response.
+[x] Sources/Transport/Poll/PollStreamMapper.swift - Poll stream mapper exposes complete poll snapshots by change kind.
+[x] Sources/Transport/Proto/whatsapp_common_types.proto - Common heartbeat proto is minimal.
+[x] Sources/Transport/Proto/whatsapp_event_service.proto - Event catch-up proto exposes message/poll/complete/heartbeat only.
+[x] Sources/Transport/Proto/whatsapp_message_service.proto - Message service proto is clean; media kind now supports image and video.
+[x] Sources/Transport/Proto/whatsapp_message_types.proto - Message types proto matches public message and stream payloads.
+[x] Sources/Transport/Proto/whatsapp_poll_service.proto - Poll service proto returns PollResponse uniformly.
+[x] Sources/Transport/Proto/whatsapp_poll_types.proto - Poll types proto matches public poll snapshot/events.
+[x] Sources/Transport/Server/GRPCTransportServer.swift - Server wiring is centralized and dependency direction remains top-down.
+[x] Sources/Transport/Server/TransportConfiguration.swift - Transport configuration model is explicit.
+[x] Sources/Transport/Streaming/StreamDisconnectNormalizer.swift - Client disconnect normalization is isolated.
+[x] Sources/Transport/Streaming/StreamingHeartbeat.swift - Streaming heartbeat/complete response helper is focused.
+
+[x] Tests/ApplicationTests/ApplicationTestSupport.swift - Application test doubles are scoped to application tests.
+[x] Tests/ApplicationTests/InputTests.swift - Input validation coverage matches application validators, including recipient/page/index/date boundaries.
+[x] Tests/ApplicationTests/MessageServiceTests.swift - Message use-case tests cover validation, deduplication, and readback semantics.
+[x] Tests/ApplicationTests/PollServiceTests.swift - Poll use-case tests cover validation, deduplication, and readback semantics.
+[x] Tests/InfrastructureTests/ChatStorageEventObserverTests.swift - Observer classification tests cover text/media/reaction/poll edge cases; stale chat helper removed.
+[x] Tests/InfrastructureTests/ChatStorageMessageMutationReadbackTests.swift - Message readback tests verify successful send/upload/reaction signals.
+[x] Tests/InfrastructureTests/ChatStorageMessageQueryingTests.swift - Message query tests verify full snapshots and stable paging.
+[x] Tests/InfrastructureTests/ChatStoragePollKeyResolverTests.swift - Poll key resolver tests cover same/cross-device ids.
+[x] Tests/InfrastructureTests/ChatStoragePollStoreGetTests.swift - Poll get tests cover ChatStorage poll decode.
+[x] Tests/InfrastructureTests/ChatStoragePollStoreReadbackTests.swift - Poll readback tests cover digest/update evidence.
+[x] Tests/InfrastructureTests/EventStreamingTests.swift - Event stream persistence/replay tests now include strict unknown attachment kind rejection.
+[x] Tests/InfrastructureTests/HelperAdapterTestSupport.swift - Helper adapter test transport is localized to helper tests.
+[x] Tests/InfrastructureTests/HelperUDSClientTests.swift - Socket client tests cover framing, mismatch, timeout, helper errors.
+[x] Tests/InfrastructureTests/MediaHelperAdapterTests.swift - Media adapter tests cover staging and cleanup.
+[x] Tests/InfrastructureTests/MessageHelperAdapterTests.swift - Text helper tests cover structured text, link preview, whitespace, UTF-16 spans.
+[x] Tests/InfrastructureTests/PollHelperAdapterTests.swift - Poll helper tests cover create/vote/unvote mapping and local key resolution.
+[x] Tests/InfrastructureTests/SpectrumProjectVerifierTests.swift - Spectrum verifier test covers WhatsApp project endpoint.
+[x] Tests/TransportTests/AuthInterceptorTests.swift - Auth interceptor tests cover missing/blocked/recorded auth state.
+[x] Tests/TransportTests/CallLifecycleInterceptorTests.swift - Lifecycle tests cover success, domain errors, RPC errors, unknown errors.
+[x] Tests/TransportTests/DomainErrorRPCMappingTests.swift - Error mapping tests cover status, masking, and metadata sanitation.
+[x] Tests/TransportTests/GRPCHandlerTests.swift - gRPC contract tests cover message, media image/video, reaction, poll, streams, input errors, and complete response shape.
+[x] Tests/TransportTests/ServerWiringTests.swift - Server wiring tests cover interceptor order and auth omission.
+
+[x] docs/event/catch-up-events.md - Catch-up docs match message/poll durable stream model.
+[x] docs/event/model.md - Event model docs correctly describe message/poll-only ownership.
+[x] docs/message/list-recent-messages.md - Recent message docs now match full Message paging response.
+[x] docs/message/send-media-message.md - Media send docs now match full Message readback and image/video support.
+[x] docs/message/send-reaction.md - Reaction docs now match full Message readback and stream behavior.
+[x] docs/message/send-text-api.md - Text content DX docs describe natural block/run structure.
+[x] docs/message/send-text-message.md - Text send docs now match full Message readback.
+[x] docs/message/subscribe-message-events.md - Message stream docs match current event payload model.
+[x] docs/poll/create-poll.md - Create poll docs match PollResponse/readback contract.
+[x] docs/poll/get-poll.md - Get poll docs match ChatStorage-backed read behavior.
+[x] docs/poll/subscribe-poll-events.md - Poll stream docs match complete snapshot event contract.
+[x] docs/poll/unvote-poll.md - Unvote docs match local poll id resolution and operationNotSupported semantics.
+[x] docs/poll/vote-poll.md - Vote docs match local poll id resolution and operationNotSupported semantics.
+[x] scripts/postinstall - Install script is focused on LaunchAgent permissions/logs/restart.

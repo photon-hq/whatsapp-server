@@ -1,0 +1,143 @@
+syntax = "proto3";
+
+package photon.whatsapp.v1;
+
+import "whatsapp_message_types.proto";
+import "google/protobuf/timestamp.proto";
+
+option swift_prefix = "PWApp_";
+
+
+service MessageService {
+
+  rpc SendTextMessage(SendTextMessageRequest) returns (MessageResponse);
+
+  rpc SendMediaMessage(SendMediaMessageRequest) returns (MessageResponse);
+
+  rpc SendReaction(SendReactionRequest) returns (MessageResponse);
+
+  rpc GetMessage(GetMessageRequest) returns (MessageResponse);
+
+  rpc ListRecentMessages(ListRecentMessagesRequest) returns (ListMessagesResponse);
+
+  rpc ListChatMessages(ListChatMessagesRequest) returns (ListMessagesResponse);
+
+  rpc SubscribeMessageEvents(SubscribeMessageEventsRequest) returns (stream SubscribeMessageEventsResponse);
+
+}
+
+
+message SendTextMessageRequest {
+
+  string recipient = 1;
+
+  repeated TextBlock content = 2;
+
+  optional string reply_to = 3;
+
+  bool enable_link_preview = 4;
+
+  optional string client_message_id = 100;
+
+}
+
+
+message MessageResponse {
+
+  Message message = 1;
+
+}
+
+
+message GetMessageRequest {
+
+  string message_id = 1;
+
+}
+
+
+enum MediaKind {
+
+  MEDIA_KIND_UNSPECIFIED = 0;
+
+  MEDIA_KIND_IMAGE = 1;
+
+  MEDIA_KIND_VIDEO = 2;
+
+}
+
+
+message MediaContent {
+
+  MediaKind kind = 1;
+
+  bytes data = 2;
+
+  optional string caption = 3;
+
+  optional string accessibility_text = 4;
+
+}
+
+
+message SendMediaMessageRequest {
+
+  string recipient = 1;
+
+  MediaContent media = 2;
+
+  optional string client_message_id = 100;
+
+}
+
+
+message SendReactionRequest {
+
+  string message_id = 1;
+
+  string emoji = 2;
+
+  optional string client_message_id = 100;
+
+}
+
+
+message ListRecentMessagesRequest {
+
+  optional int32 page_size = 1;
+
+  optional string page_token = 2;
+
+  optional bool is_from_me = 3;
+
+  optional google.protobuf.Timestamp before = 4;
+
+  optional google.protobuf.Timestamp after = 5;
+
+}
+
+
+message ListChatMessagesRequest {
+
+  string recipient = 1;
+
+  optional int32 page_size = 2;
+
+  optional string page_token = 3;
+
+  optional bool is_from_me = 4;
+
+  optional google.protobuf.Timestamp before = 5;
+
+  optional google.protobuf.Timestamp after = 6;
+
+}
+
+
+message ListMessagesResponse {
+
+  repeated Message messages = 1;
+
+  optional string next_page_token = 2;
+
+}

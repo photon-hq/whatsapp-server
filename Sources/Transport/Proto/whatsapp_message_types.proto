@@ -1,0 +1,228 @@
+syntax = "proto3";
+
+package photon.whatsapp.v1;
+
+import "google/protobuf/timestamp.proto";
+import "whatsapp_common_types.proto";
+
+option swift_prefix = "PWApp_";
+
+
+message TextBlock {
+  TextBlockType type = 1;
+  repeated TextRun text = 2;
+}
+
+message TextRun {
+  string text = 1;
+  repeated TextStyle styles = 2;
+}
+
+enum TextBlockType {
+  TEXT_BLOCK_TYPE_NORMAL = 0;
+  TEXT_BLOCK_TYPE_QUOTE = 1;
+  TEXT_BLOCK_TYPE_BULLET = 2;
+  TEXT_BLOCK_TYPE_NUMBERED = 3;
+}
+
+enum TextStyle {
+  TEXT_STYLE_UNSPECIFIED = 0;
+  TEXT_STYLE_BOLD = 1;
+  TEXT_STYLE_ITALIC = 2;
+  TEXT_STYLE_STRIKETHROUGH = 3;
+  TEXT_STYLE_CODE = 4;
+}
+
+
+message Message {
+
+  string message_id = 1;
+
+  string recipient = 2;
+
+  string chat_jid = 3;
+
+  optional string partner_name = 4;
+
+  string stanza_id = 5;
+
+  bool is_from_me = 6;
+
+  int32 message_type = 7;
+
+  optional int32 message_status = 8;
+
+  optional int32 message_error_status = 9;
+
+  optional google.protobuf.Timestamp message_date = 10;
+
+  optional google.protobuf.Timestamp sent_date = 11;
+
+  string text = 12;
+
+  optional string from_jid = 13;
+
+  optional string to_jid = 14;
+
+  optional string push_name = 15;
+
+  optional string reply_to_message_id = 16;
+
+  optional MessageMedia media = 17;
+
+  optional MessageReaction latest_reaction = 18;
+
+  optional string receipt_digest = 19;
+
+}
+
+
+message MessageMedia {
+
+  MessageAttachmentKind kind = 1;
+
+  optional string title = 2;
+
+  optional string local_path = 3;
+
+  optional string media_url = 4;
+
+  optional int64 file_size = 5;
+
+  optional string vcard_name = 6;
+
+  optional string vcard_string = 7;
+
+  optional double latitude = 8;
+
+  optional double longitude = 9;
+
+  optional string thumbnail_local_path = 10;
+
+  optional string xmpp_thumbnail_path = 11;
+
+  optional google.protobuf.Timestamp media_url_date = 12;
+
+  optional int32 cloud_status = 13;
+
+}
+
+
+message MessageText {
+
+  string message_id = 1;
+
+  string text = 2;
+
+  optional string reply_to_message_id = 3;
+
+}
+
+
+enum MessageAttachmentKind {
+
+  MESSAGE_ATTACHMENT_KIND_UNKNOWN = 0;
+
+  MESSAGE_ATTACHMENT_KIND_IMAGE = 1;
+
+  MESSAGE_ATTACHMENT_KIND_VIDEO = 2;
+
+  MESSAGE_ATTACHMENT_KIND_AUDIO = 3;
+
+  MESSAGE_ATTACHMENT_KIND_VOICE = 4;
+
+  MESSAGE_ATTACHMENT_KIND_DOCUMENT = 5;
+
+  MESSAGE_ATTACHMENT_KIND_STICKER = 6;
+
+  MESSAGE_ATTACHMENT_KIND_CONTACT = 7;
+
+  MESSAGE_ATTACHMENT_KIND_LOCATION = 8;
+
+}
+
+
+message MessageAttachment {
+
+  string message_id = 1;
+
+  MessageAttachmentKind kind = 2;
+
+  optional string caption = 3;
+
+  optional string local_path = 4;
+
+  optional int64 file_size = 5;
+
+  optional string title = 6;
+
+  optional string reply_to_message_id = 7;
+
+}
+
+
+message MessageReaction {
+
+  string message_id = 1;
+
+  optional string emoji = 2;
+
+  optional string actor_jid = 3;
+
+  optional string reaction_id = 4;
+
+}
+
+
+message MessageReceiptUpdate {
+
+  string message_id = 1;
+
+  string receipt_digest = 2;
+
+}
+
+
+message MessageChangeEvent {
+
+  string recipient = 1;
+
+  google.protobuf.Timestamp occurred_at = 2;
+
+  bool is_from_me = 3;
+
+  oneof change {
+
+    MessageText text = 10;
+
+    MessageAttachment attachment = 11;
+
+    MessageReaction reaction = 12;
+
+    MessageReceiptUpdate receipt = 13;
+
+  }
+
+}
+
+
+message SubscribeMessageEventsRequest {
+
+  optional string recipient = 1;
+
+}
+
+
+message SubscribeMessageEventsResponse {
+
+  optional uint64 sequence = 1;
+
+  oneof payload {
+
+    MessageChangeEvent message_changed = 10;
+
+    Heartbeat heartbeat = 99;
+
+  }
+
+}
