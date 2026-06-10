@@ -36,8 +36,11 @@ package struct ChatStorageMessageMutationReadback: MessageMutationReadback, Send
             stanzaId: key.stanzaId,
             isFromMe: key.isFromMe
         ).first { row in
+            // Identity is already guaranteed by messageId (contactJid + stanzaId +
+            // isFromMe come from the helper's authoritative send response). A phone
+            // recipient cannot be matched against modern @lid-addressed sessions,
+            // so an extra recipient check here would only produce false timeouts.
             row.messageId == query.messageId
-                && row.matches(recipient: query.recipient)
                 && row.isFromMe
                 && row.hasSuccessfulSendSignal
                 && row.matches(replyToMessageId: query.replyToMessageId)
