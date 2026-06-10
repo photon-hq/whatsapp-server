@@ -217,6 +217,14 @@ struct ChatStorageMessageRecord: Decodable, FetchableRecord, Sendable {
         return text == caption || mediaTitle == caption
     }
 
+    func vcardNameMatches(_ expected: String?) -> Bool {
+        guard let expected, !expected.isEmpty else {
+            return true
+        }
+
+        return mediaVCardName == expected
+    }
+
     func matches(replyToMessageId expected: String?) -> Bool {
         guard let expected else {
             return true
@@ -242,6 +250,37 @@ struct ChatStorageMessageRecord: Decodable, FetchableRecord, Sendable {
         }
 
         return !mediaUrl.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    var hasContactData: Bool {
+        guard let vcard = nonEmpty(mediaVCardString) else {
+            return false
+        }
+
+        return vcard.hasPrefix("BEGIN:VCARD")
+    }
+
+    /// Treats audio and voice (PTT) as equivalent: the helper's `send-audio`
+    /// always sends a voice note but ChatStorage may classify it as either.
+    func attachmentKindMatches(_ kind: MessageAttachmentKind) -> Bool {
+        let actual = attachmentKind
+        if actual == kind {
+            return true
+        }
+
+        let audioLike: Set<MessageAttachmentKind> = [.audio, .voice]
+        return audioLike.contains(actual) && audioLike.contains(kind)
+    }
+
+    /// Operation-specific "this attachment was accepted" signal. Uploaded media
+    /// (mediaUrl) for binary attachments; vCard payload for contact cards.
+    func attachmentReady(for kind: MessageAttachmentKind) -> Bool {
+        switch kind {
+        case .contact:
+            return hasContactData
+        default:
+            return hasUploadedMedia
+        }
     }
 
     var hasSuccessfulMediaSendSignal: Bool {
@@ -340,7 +379,10 @@ struct ChatStorageMessageRecord: Decodable, FetchableRecord, Sendable {
             }
         }
 
-        if nonEmpty(mediaVCardName) != nil {
+        // ZVCARDNAME doubles as a media-hash column on document/media rows, so
+        // only treat the row as a contact card when an actual vCard payload is
+        // present (real contact sends also carry ZMESSAGETYPE == 4).
+        if hasContactData {
             return .contact
         }
 

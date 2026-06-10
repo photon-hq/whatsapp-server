@@ -63,6 +63,60 @@ enum PWApp_MediaKind: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
+enum PWApp_MessageDeliveryStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+  typealias RawValue = Int
+  case unspecified // = 0
+  case pending // = 1
+  case sent // = 2
+  case delivered // = 3
+  case read // = 4
+  case played // = 5
+  case error // = 6
+  case UNRECOGNIZED(Int)
+
+  init() {
+    self = .unspecified
+  }
+
+  init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unspecified
+    case 1: self = .pending
+    case 2: self = .sent
+    case 3: self = .delivered
+    case 4: self = .read
+    case 5: self = .played
+    case 6: self = .error
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  var rawValue: Int {
+    switch self {
+    case .unspecified: return 0
+    case .pending: return 1
+    case .sent: return 2
+    case .delivered: return 3
+    case .read: return 4
+    case .played: return 5
+    case .error: return 6
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static let allCases: [PWApp_MessageDeliveryStatus] = [
+    .unspecified,
+    .pending,
+    .sent,
+    .delivered,
+    .read,
+    .played,
+    .error,
+  ]
+
+}
+
 struct PWApp_SendTextMessageRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -201,6 +255,239 @@ struct PWApp_SendMediaMessageRequest: Sendable {
   fileprivate var _clientMessageID: String? = nil
 }
 
+struct PWApp_SendAlbumRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var recipient: String = String()
+
+  /// 2 to 30 media items sharing the same kind (all images or all videos).
+  var items: [PWApp_MediaContent] = []
+
+  var clientMessageID: String {
+    get {_clientMessageID ?? String()}
+    set {_clientMessageID = newValue}
+  }
+  /// Returns true if `clientMessageID` has been explicitly set.
+  var hasClientMessageID: Bool {self._clientMessageID != nil}
+  /// Clears the value of `clientMessageID`. Subsequent reads from it will return its default value.
+  mutating func clearClientMessageID() {self._clientMessageID = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _clientMessageID: String? = nil
+}
+
+struct PWApp_SendAlbumResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Persisted snapshots for the album items, oldest first.
+  var messages: [PWApp_Message] = []
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PWApp_SendDocumentRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var recipient: String = String()
+
+  var data: Data = Data()
+
+  var fileName: String {
+    get {_fileName ?? String()}
+    set {_fileName = newValue}
+  }
+  /// Returns true if `fileName` has been explicitly set.
+  var hasFileName: Bool {self._fileName != nil}
+  /// Clears the value of `fileName`. Subsequent reads from it will return its default value.
+  mutating func clearFileName() {self._fileName = nil}
+
+  var mimeType: String {
+    get {_mimeType ?? String()}
+    set {_mimeType = newValue}
+  }
+  /// Returns true if `mimeType` has been explicitly set.
+  var hasMimeType: Bool {self._mimeType != nil}
+  /// Clears the value of `mimeType`. Subsequent reads from it will return its default value.
+  mutating func clearMimeType() {self._mimeType = nil}
+
+  var caption: String {
+    get {_caption ?? String()}
+    set {_caption = newValue}
+  }
+  /// Returns true if `caption` has been explicitly set.
+  var hasCaption: Bool {self._caption != nil}
+  /// Clears the value of `caption`. Subsequent reads from it will return its default value.
+  mutating func clearCaption() {self._caption = nil}
+
+  var clientMessageID: String {
+    get {_clientMessageID ?? String()}
+    set {_clientMessageID = newValue}
+  }
+  /// Returns true if `clientMessageID` has been explicitly set.
+  var hasClientMessageID: Bool {self._clientMessageID != nil}
+  /// Clears the value of `clientMessageID`. Subsequent reads from it will return its default value.
+  mutating func clearClientMessageID() {self._clientMessageID = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _fileName: String? = nil
+  fileprivate var _mimeType: String? = nil
+  fileprivate var _caption: String? = nil
+  fileprivate var _clientMessageID: String? = nil
+}
+
+struct PWApp_SendAudioRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var recipient: String = String()
+
+  /// Voice-note audio payload. Must be a decodable audio container.
+  var data: Data = Data()
+
+  var mimeType: String {
+    get {_mimeType ?? String()}
+    set {_mimeType = newValue}
+  }
+  /// Returns true if `mimeType` has been explicitly set.
+  var hasMimeType: Bool {self._mimeType != nil}
+  /// Clears the value of `mimeType`. Subsequent reads from it will return its default value.
+  mutating func clearMimeType() {self._mimeType = nil}
+
+  var clientMessageID: String {
+    get {_clientMessageID ?? String()}
+    set {_clientMessageID = newValue}
+  }
+  /// Returns true if `clientMessageID` has been explicitly set.
+  var hasClientMessageID: Bool {self._clientMessageID != nil}
+  /// Clears the value of `clientMessageID`. Subsequent reads from it will return its default value.
+  mutating func clearClientMessageID() {self._clientMessageID = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _mimeType: String? = nil
+  fileprivate var _clientMessageID: String? = nil
+}
+
+struct PWApp_SendStickerRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var recipient: String = String()
+
+  /// Sticker image payload. WhatsApp converts it to WebP when needed.
+  var data: Data = Data()
+
+  var emojis: [String] = []
+
+  var accessibilityText: String {
+    get {_accessibilityText ?? String()}
+    set {_accessibilityText = newValue}
+  }
+  /// Returns true if `accessibilityText` has been explicitly set.
+  var hasAccessibilityText: Bool {self._accessibilityText != nil}
+  /// Clears the value of `accessibilityText`. Subsequent reads from it will return its default value.
+  mutating func clearAccessibilityText() {self._accessibilityText = nil}
+
+  var clientMessageID: String {
+    get {_clientMessageID ?? String()}
+    set {_clientMessageID = newValue}
+  }
+  /// Returns true if `clientMessageID` has been explicitly set.
+  var hasClientMessageID: Bool {self._clientMessageID != nil}
+  /// Clears the value of `clientMessageID`. Subsequent reads from it will return its default value.
+  mutating func clearClientMessageID() {self._clientMessageID = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _accessibilityText: String? = nil
+  fileprivate var _clientMessageID: String? = nil
+}
+
+struct PWApp_ContactCard: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Display name. Optional when a full vCard is provided.
+  var name: String = String()
+
+  /// Complete serialized vCard. When absent one is synthesized from the
+  /// name/phones/emails/organization fields.
+  var vcard: String {
+    get {_vcard ?? String()}
+    set {_vcard = newValue}
+  }
+  /// Returns true if `vcard` has been explicitly set.
+  var hasVcard: Bool {self._vcard != nil}
+  /// Clears the value of `vcard`. Subsequent reads from it will return its default value.
+  mutating func clearVcard() {self._vcard = nil}
+
+  var phones: [String] = []
+
+  var emails: [String] = []
+
+  var organization: String {
+    get {_organization ?? String()}
+    set {_organization = newValue}
+  }
+  /// Returns true if `organization` has been explicitly set.
+  var hasOrganization: Bool {self._organization != nil}
+  /// Clears the value of `organization`. Subsequent reads from it will return its default value.
+  mutating func clearOrganization() {self._organization = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _vcard: String? = nil
+  fileprivate var _organization: String? = nil
+}
+
+struct PWApp_SendContactRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var recipient: String = String()
+
+  var contacts: [PWApp_ContactCard] = []
+
+  var clientMessageID: String {
+    get {_clientMessageID ?? String()}
+    set {_clientMessageID = newValue}
+  }
+  /// Returns true if `clientMessageID` has been explicitly set.
+  var hasClientMessageID: Bool {self._clientMessageID != nil}
+  /// Clears the value of `clientMessageID`. Subsequent reads from it will return its default value.
+  mutating func clearClientMessageID() {self._clientMessageID = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _clientMessageID: String? = nil
+}
+
 struct PWApp_SendReactionRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -224,6 +511,136 @@ struct PWApp_SendReactionRequest: Sendable {
   init() {}
 
   fileprivate var _clientMessageID: String? = nil
+}
+
+struct PWApp_EditMessageRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Target outgoing text message id (WAMessage.uniqueKey).
+  var messageID: String = String()
+
+  /// New plain text body.
+  var text: String = String()
+
+  var clientMessageID: String {
+    get {_clientMessageID ?? String()}
+    set {_clientMessageID = newValue}
+  }
+  /// Returns true if `clientMessageID` has been explicitly set.
+  var hasClientMessageID: Bool {self._clientMessageID != nil}
+  /// Clears the value of `clientMessageID`. Subsequent reads from it will return its default value.
+  mutating func clearClientMessageID() {self._clientMessageID = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _clientMessageID: String? = nil
+}
+
+struct PWApp_RevokeMessageRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Target outgoing message id (WAMessage.uniqueKey). "Delete for everyone".
+  var messageID: String = String()
+
+  var clientMessageID: String {
+    get {_clientMessageID ?? String()}
+    set {_clientMessageID = newValue}
+  }
+  /// Returns true if `clientMessageID` has been explicitly set.
+  var hasClientMessageID: Bool {self._clientMessageID != nil}
+  /// Clears the value of `clientMessageID`. Subsequent reads from it will return its default value.
+  mutating func clearClientMessageID() {self._clientMessageID = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _clientMessageID: String? = nil
+}
+
+struct PWApp_DeleteMessageRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Target message id (WAMessage.uniqueKey). Local-only delete.
+  var messageID: String = String()
+
+  var clientMessageID: String {
+    get {_clientMessageID ?? String()}
+    set {_clientMessageID = newValue}
+  }
+  /// Returns true if `clientMessageID` has been explicitly set.
+  var hasClientMessageID: Bool {self._clientMessageID != nil}
+  /// Clears the value of `clientMessageID`. Subsequent reads from it will return its default value.
+  mutating func clearClientMessageID() {self._clientMessageID = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _clientMessageID: String? = nil
+}
+
+struct PWApp_RemoveMessageResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var messageID: String = String()
+
+  /// True once the local ChatStorage row is gone (or replaced by a revoke
+  /// placeholder).
+  var removed: Bool = false
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PWApp_GetMessageStatusRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var messageID: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct PWApp_GetMessageStatusResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var messageID: String = String()
+
+  var status: PWApp_MessageDeliveryStatus = .unspecified
+
+  /// Raw -[WAMessage getComputedMessageStatus] value.
+  var statusCode: Int32 = 0
+
+  var isFromMe: Bool = false
+
+  var isSent: Bool = false
+
+  var isError: Bool = false
+
+  var isPlayed: Bool = false
+
+  var text: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
 }
 
 struct PWApp_ListRecentMessagesRequest: Sendable {
@@ -379,6 +796,10 @@ fileprivate let _protobuf_package = "photon.whatsapp.v1"
 
 extension PWApp_MediaKind: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MEDIA_KIND_UNSPECIFIED\0\u{1}MEDIA_KIND_IMAGE\0\u{1}MEDIA_KIND_VIDEO\0")
+}
+
+extension PWApp_MessageDeliveryStatus: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MESSAGE_DELIVERY_STATUS_UNSPECIFIED\0\u{1}MESSAGE_DELIVERY_STATUS_PENDING\0\u{1}MESSAGE_DELIVERY_STATUS_SENT\0\u{1}MESSAGE_DELIVERY_STATUS_DELIVERED\0\u{1}MESSAGE_DELIVERY_STATUS_READ\0\u{1}MESSAGE_DELIVERY_STATUS_PLAYED\0\u{1}MESSAGE_DELIVERY_STATUS_ERROR\0")
 }
 
 extension PWApp_SendTextMessageRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
@@ -592,6 +1013,340 @@ extension PWApp_SendMediaMessageRequest: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
+extension PWApp_SendAlbumRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".SendAlbumRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipient\0\u{1}items\0\u{4}b\u{1}client_message_id\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.recipient) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.items) }()
+      case 100: try { try decoder.decodeSingularStringField(value: &self._clientMessageID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.recipient.isEmpty {
+      try visitor.visitSingularStringField(value: self.recipient, fieldNumber: 1)
+    }
+    if !self.items.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.items, fieldNumber: 2)
+    }
+    try { if let v = self._clientMessageID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 100)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PWApp_SendAlbumRequest, rhs: PWApp_SendAlbumRequest) -> Bool {
+    if lhs.recipient != rhs.recipient {return false}
+    if lhs.items != rhs.items {return false}
+    if lhs._clientMessageID != rhs._clientMessageID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PWApp_SendAlbumResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".SendAlbumResponse"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}messages\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.messages) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.messages.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.messages, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PWApp_SendAlbumResponse, rhs: PWApp_SendAlbumResponse) -> Bool {
+    if lhs.messages != rhs.messages {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PWApp_SendDocumentRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".SendDocumentRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipient\0\u{1}data\0\u{3}file_name\0\u{3}mime_type\0\u{1}caption\0\u{4}_\u{1}client_message_id\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.recipient) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.data) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._fileName) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self._mimeType) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self._caption) }()
+      case 100: try { try decoder.decodeSingularStringField(value: &self._clientMessageID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.recipient.isEmpty {
+      try visitor.visitSingularStringField(value: self.recipient, fieldNumber: 1)
+    }
+    if !self.data.isEmpty {
+      try visitor.visitSingularBytesField(value: self.data, fieldNumber: 2)
+    }
+    try { if let v = self._fileName {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._mimeType {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    } }()
+    try { if let v = self._caption {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+    } }()
+    try { if let v = self._clientMessageID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 100)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PWApp_SendDocumentRequest, rhs: PWApp_SendDocumentRequest) -> Bool {
+    if lhs.recipient != rhs.recipient {return false}
+    if lhs.data != rhs.data {return false}
+    if lhs._fileName != rhs._fileName {return false}
+    if lhs._mimeType != rhs._mimeType {return false}
+    if lhs._caption != rhs._caption {return false}
+    if lhs._clientMessageID != rhs._clientMessageID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PWApp_SendAudioRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".SendAudioRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipient\0\u{1}data\0\u{3}mime_type\0\u{4}a\u{1}client_message_id\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.recipient) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.data) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._mimeType) }()
+      case 100: try { try decoder.decodeSingularStringField(value: &self._clientMessageID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.recipient.isEmpty {
+      try visitor.visitSingularStringField(value: self.recipient, fieldNumber: 1)
+    }
+    if !self.data.isEmpty {
+      try visitor.visitSingularBytesField(value: self.data, fieldNumber: 2)
+    }
+    try { if let v = self._mimeType {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._clientMessageID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 100)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PWApp_SendAudioRequest, rhs: PWApp_SendAudioRequest) -> Bool {
+    if lhs.recipient != rhs.recipient {return false}
+    if lhs.data != rhs.data {return false}
+    if lhs._mimeType != rhs._mimeType {return false}
+    if lhs._clientMessageID != rhs._clientMessageID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PWApp_SendStickerRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".SendStickerRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipient\0\u{1}data\0\u{1}emojis\0\u{3}accessibility_text\0\u{4}`\u{1}client_message_id\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.recipient) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.data) }()
+      case 3: try { try decoder.decodeRepeatedStringField(value: &self.emojis) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self._accessibilityText) }()
+      case 100: try { try decoder.decodeSingularStringField(value: &self._clientMessageID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.recipient.isEmpty {
+      try visitor.visitSingularStringField(value: self.recipient, fieldNumber: 1)
+    }
+    if !self.data.isEmpty {
+      try visitor.visitSingularBytesField(value: self.data, fieldNumber: 2)
+    }
+    if !self.emojis.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.emojis, fieldNumber: 3)
+    }
+    try { if let v = self._accessibilityText {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    } }()
+    try { if let v = self._clientMessageID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 100)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PWApp_SendStickerRequest, rhs: PWApp_SendStickerRequest) -> Bool {
+    if lhs.recipient != rhs.recipient {return false}
+    if lhs.data != rhs.data {return false}
+    if lhs.emojis != rhs.emojis {return false}
+    if lhs._accessibilityText != rhs._accessibilityText {return false}
+    if lhs._clientMessageID != rhs._clientMessageID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PWApp_ContactCard: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ContactCard"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}vcard\0\u{1}phones\0\u{1}emails\0\u{1}organization\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.name) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._vcard) }()
+      case 3: try { try decoder.decodeRepeatedStringField(value: &self.phones) }()
+      case 4: try { try decoder.decodeRepeatedStringField(value: &self.emails) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self._organization) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 1)
+    }
+    try { if let v = self._vcard {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
+    if !self.phones.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.phones, fieldNumber: 3)
+    }
+    if !self.emails.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.emails, fieldNumber: 4)
+    }
+    try { if let v = self._organization {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PWApp_ContactCard, rhs: PWApp_ContactCard) -> Bool {
+    if lhs.name != rhs.name {return false}
+    if lhs._vcard != rhs._vcard {return false}
+    if lhs.phones != rhs.phones {return false}
+    if lhs.emails != rhs.emails {return false}
+    if lhs._organization != rhs._organization {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PWApp_SendContactRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".SendContactRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipient\0\u{1}contacts\0\u{4}b\u{1}client_message_id\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.recipient) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.contacts) }()
+      case 100: try { try decoder.decodeSingularStringField(value: &self._clientMessageID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.recipient.isEmpty {
+      try visitor.visitSingularStringField(value: self.recipient, fieldNumber: 1)
+    }
+    if !self.contacts.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.contacts, fieldNumber: 2)
+    }
+    try { if let v = self._clientMessageID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 100)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PWApp_SendContactRequest, rhs: PWApp_SendContactRequest) -> Bool {
+    if lhs.recipient != rhs.recipient {return false}
+    if lhs.contacts != rhs.contacts {return false}
+    if lhs._clientMessageID != rhs._clientMessageID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension PWApp_SendReactionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SendReactionRequest"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}message_id\0\u{1}emoji\0\u{4}b\u{1}client_message_id\0")
@@ -631,6 +1386,258 @@ extension PWApp_SendReactionRequest: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if lhs.messageID != rhs.messageID {return false}
     if lhs.emoji != rhs.emoji {return false}
     if lhs._clientMessageID != rhs._clientMessageID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PWApp_EditMessageRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".EditMessageRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}message_id\0\u{1}text\0\u{4}b\u{1}client_message_id\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.messageID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.text) }()
+      case 100: try { try decoder.decodeSingularStringField(value: &self._clientMessageID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.messageID.isEmpty {
+      try visitor.visitSingularStringField(value: self.messageID, fieldNumber: 1)
+    }
+    if !self.text.isEmpty {
+      try visitor.visitSingularStringField(value: self.text, fieldNumber: 2)
+    }
+    try { if let v = self._clientMessageID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 100)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PWApp_EditMessageRequest, rhs: PWApp_EditMessageRequest) -> Bool {
+    if lhs.messageID != rhs.messageID {return false}
+    if lhs.text != rhs.text {return false}
+    if lhs._clientMessageID != rhs._clientMessageID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PWApp_RevokeMessageRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".RevokeMessageRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}message_id\0\u{4}c\u{1}client_message_id\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.messageID) }()
+      case 100: try { try decoder.decodeSingularStringField(value: &self._clientMessageID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.messageID.isEmpty {
+      try visitor.visitSingularStringField(value: self.messageID, fieldNumber: 1)
+    }
+    try { if let v = self._clientMessageID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 100)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PWApp_RevokeMessageRequest, rhs: PWApp_RevokeMessageRequest) -> Bool {
+    if lhs.messageID != rhs.messageID {return false}
+    if lhs._clientMessageID != rhs._clientMessageID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PWApp_DeleteMessageRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".DeleteMessageRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}message_id\0\u{4}c\u{1}client_message_id\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.messageID) }()
+      case 100: try { try decoder.decodeSingularStringField(value: &self._clientMessageID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.messageID.isEmpty {
+      try visitor.visitSingularStringField(value: self.messageID, fieldNumber: 1)
+    }
+    try { if let v = self._clientMessageID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 100)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PWApp_DeleteMessageRequest, rhs: PWApp_DeleteMessageRequest) -> Bool {
+    if lhs.messageID != rhs.messageID {return false}
+    if lhs._clientMessageID != rhs._clientMessageID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PWApp_RemoveMessageResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".RemoveMessageResponse"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}message_id\0\u{1}removed\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.messageID) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self.removed) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.messageID.isEmpty {
+      try visitor.visitSingularStringField(value: self.messageID, fieldNumber: 1)
+    }
+    if self.removed != false {
+      try visitor.visitSingularBoolField(value: self.removed, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PWApp_RemoveMessageResponse, rhs: PWApp_RemoveMessageResponse) -> Bool {
+    if lhs.messageID != rhs.messageID {return false}
+    if lhs.removed != rhs.removed {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PWApp_GetMessageStatusRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".GetMessageStatusRequest"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}message_id\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.messageID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.messageID.isEmpty {
+      try visitor.visitSingularStringField(value: self.messageID, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PWApp_GetMessageStatusRequest, rhs: PWApp_GetMessageStatusRequest) -> Bool {
+    if lhs.messageID != rhs.messageID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension PWApp_GetMessageStatusResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".GetMessageStatusResponse"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}message_id\0\u{1}status\0\u{3}status_code\0\u{3}is_from_me\0\u{3}is_sent\0\u{3}is_error\0\u{3}is_played\0\u{1}text\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.messageID) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.status) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self.statusCode) }()
+      case 4: try { try decoder.decodeSingularBoolField(value: &self.isFromMe) }()
+      case 5: try { try decoder.decodeSingularBoolField(value: &self.isSent) }()
+      case 6: try { try decoder.decodeSingularBoolField(value: &self.isError) }()
+      case 7: try { try decoder.decodeSingularBoolField(value: &self.isPlayed) }()
+      case 8: try { try decoder.decodeSingularStringField(value: &self.text) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.messageID.isEmpty {
+      try visitor.visitSingularStringField(value: self.messageID, fieldNumber: 1)
+    }
+    if self.status != .unspecified {
+      try visitor.visitSingularEnumField(value: self.status, fieldNumber: 2)
+    }
+    if self.statusCode != 0 {
+      try visitor.visitSingularInt32Field(value: self.statusCode, fieldNumber: 3)
+    }
+    if self.isFromMe != false {
+      try visitor.visitSingularBoolField(value: self.isFromMe, fieldNumber: 4)
+    }
+    if self.isSent != false {
+      try visitor.visitSingularBoolField(value: self.isSent, fieldNumber: 5)
+    }
+    if self.isError != false {
+      try visitor.visitSingularBoolField(value: self.isError, fieldNumber: 6)
+    }
+    if self.isPlayed != false {
+      try visitor.visitSingularBoolField(value: self.isPlayed, fieldNumber: 7)
+    }
+    if !self.text.isEmpty {
+      try visitor.visitSingularStringField(value: self.text, fieldNumber: 8)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: PWApp_GetMessageStatusResponse, rhs: PWApp_GetMessageStatusResponse) -> Bool {
+    if lhs.messageID != rhs.messageID {return false}
+    if lhs.status != rhs.status {return false}
+    if lhs.statusCode != rhs.statusCode {return false}
+    if lhs.isFromMe != rhs.isFromMe {return false}
+    if lhs.isSent != rhs.isSent {return false}
+    if lhs.isError != rhs.isError {return false}
+    if lhs.isPlayed != rhs.isPlayed {return false}
+    if lhs.text != rhs.text {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

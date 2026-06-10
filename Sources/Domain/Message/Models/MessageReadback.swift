@@ -42,6 +42,30 @@ package struct SentMediaReadbackQuery: Sendable, Equatable {
 
 }
 
+package struct SentAttachmentReadbackQuery: Sendable, Equatable {
+
+    package let recipient: String
+    package let kind: MessageAttachmentKind
+    package let caption: String?
+    package let vcardName: String?
+    package let notBefore: Date
+
+    package init(
+        recipient: String,
+        kind: MessageAttachmentKind,
+        caption: String? = nil,
+        vcardName: String? = nil,
+        notBefore: Date
+    ) {
+        self.recipient = recipient
+        self.kind = kind
+        self.caption = caption
+        self.vcardName = vcardName
+        self.notBefore = notBefore
+    }
+
+}
+
 package struct ReactionReadbackQuery: Sendable, Equatable {
 
     package let messageId: String

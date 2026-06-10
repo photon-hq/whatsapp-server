@@ -9,13 +9,30 @@ import XCTest
 private actor MessageCommandRecorder:
     SendTextMessage,
     SendMediaMessage,
+    SendAlbum,
+    SendDocument,
+    SendAudio,
+    SendSticker,
+    SendContact,
     SendReaction,
+    EditMessage,
+    RevokeMessage,
+    DeleteMessage,
+    MessageStatusQuerying,
     MessageQuerying,
     MessageMutationReadback
 {
 
     private(set) var lastTextCommand: SendTextMessageCommand?
     private(set) var lastMediaCommand: SendMediaMessageCommand?
+    private(set) var lastAlbumCommand: SendAlbumCommand?
+    private(set) var lastDocumentCommand: SendDocumentCommand?
+    private(set) var lastAudioCommand: SendAudioCommand?
+    private(set) var lastStickerCommand: SendStickerCommand?
+    private(set) var lastContactCommand: SendContactCommand?
+    private(set) var lastEditCommand: EditMessageCommand?
+    private(set) var editedText: String?
+    private(set) var removedMessageIds: [String] = []
     private(set) var lastReactionCommand: SendReactionCommand?
 
     func sendTextMessage(_ command: SendTextMessageCommand) async throws -> String {
@@ -25,6 +42,52 @@ private actor MessageCommandRecorder:
 
     func sendMediaMessage(_ command: SendMediaMessageCommand) async throws {
         lastMediaCommand = command
+    }
+
+    func sendAlbum(_ command: SendAlbumCommand) async throws {
+        lastAlbumCommand = command
+    }
+
+    func sendDocument(_ command: SendDocumentCommand) async throws {
+        lastDocumentCommand = command
+    }
+
+    func sendAudio(_ command: SendAudioCommand) async throws {
+        lastAudioCommand = command
+    }
+
+    func sendSticker(_ command: SendStickerCommand) async throws {
+        lastStickerCommand = command
+    }
+
+    func sendContact(_ command: SendContactCommand) async throws {
+        lastContactCommand = command
+    }
+
+    func editMessage(_ command: EditMessageCommand) async throws {
+        lastEditCommand = command
+        editedText = command.text
+    }
+
+    func revokeMessage(messageId: String) async throws {
+        removedMessageIds.append(messageId)
+    }
+
+    func deleteMessage(messageId: String) async throws {
+        removedMessageIds.append(messageId)
+    }
+
+    func messageStatus(messageId: String) async throws -> MessageDeliveryStatusSnapshot {
+        MessageDeliveryStatusSnapshot(
+            messageId: messageId,
+            status: .delivered,
+            statusCode: 2,
+            isFromMe: true,
+            isSent: true,
+            isError: false,
+            isPlayed: false,
+            text: "status text"
+        )
     }
 
     func sendReaction(_ command: SendReactionCommand) async throws {
@@ -100,6 +163,36 @@ private actor MessageCommandRecorder:
                 mediaUrl: "https://mmg.whatsapp.net/photo.jpg",
                 fileSize: 42
             )
+        )
+    }
+
+    func sentAttachments(
+        matching query: SentAttachmentReadbackQuery,
+        limit: Int
+    ) async throws -> [MessageSnapshot] {
+        guard let snapshot = try await sentAttachment(matching: query) else {
+            return []
+        }
+
+        return Array(repeating: snapshot, count: limit)
+    }
+
+    func sentAttachment(
+        matching query: SentAttachmentReadbackQuery
+    ) async throws -> MessageSnapshot? {
+        MessageSnapshot(
+            messageId: "attachment-1",
+            recipient: query.recipient,
+            chatJid: "chat@lid",
+            partnerName: "Partner",
+            stanzaId: "attachment-stanza-1",
+            isFromMe: true,
+            messageType: 1,
+            messageStatus: 6,
+            messageErrorStatus: 0,
+            text: query.caption ?? "",
+            messageDate: Date(timeIntervalSince1970: 12),
+            sentDate: Date(timeIntervalSince1970: 13)
         )
     }
 
@@ -1169,7 +1262,16 @@ private func messageService(
     MessageService(
         sendTextMessage: recorder,
         sendMediaMessage: recorder,
+        sendAlbum: recorder,
+        sendDocument: recorder,
+        sendAudio: recorder,
+        sendSticker: recorder,
+        sendContact: recorder,
         sendReaction: recorder,
+        editMessage: recorder,
+        revokeMessage: recorder,
+        deleteMessage: recorder,
+        messageStatusQuerying: recorder,
         messageQuerying: recorder,
         mutationReadback: recorder,
         mutationPolicy: NoopMutationPolicy(),

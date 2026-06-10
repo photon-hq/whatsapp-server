@@ -76,7 +76,28 @@ final class AppRuntime: Sendable {
                 client: helperClient,
                 stagingDirectory: config.mediaStagingDirectory
             ),
+            sendAlbum: try HelperSendAlbum(
+                client: helperClient,
+                stagingDirectory: config.mediaStagingDirectory
+            ),
+            sendDocument: try HelperSendDocument(
+                client: helperClient,
+                stagingDirectory: config.mediaStagingDirectory
+            ),
+            sendAudio: try HelperSendAudio(
+                client: helperClient,
+                stagingDirectory: config.mediaStagingDirectory
+            ),
+            sendSticker: try HelperSendSticker(
+                client: helperClient,
+                stagingDirectory: config.mediaStagingDirectory
+            ),
+            sendContact: HelperSendContact(client: helperClient),
             sendReaction: HelperSendReaction(client: helperClient),
+            editMessage: HelperEditMessage(client: helperClient),
+            revokeMessage: HelperRevokeMessage(client: helperClient),
+            deleteMessage: HelperDeleteMessage(client: helperClient),
+            messageStatusQuerying: HelperMessageStatusQuerying(client: helperClient),
             messageQuerying: ChatStorageMessageQuerying(database: chatStorageDatabase),
             mutationReadback: ChatStorageMessageMutationReadback(database: chatStorageDatabase),
             mutationPolicy: mutationPolicy,
@@ -99,6 +120,12 @@ final class AppRuntime: Sendable {
             events: EventService(
                 eventStreaming: eventStream,
                 messageProjector: MessageEventProjector()
+            ),
+            profile: ProfileService(
+                modifyProfile: try HelperModifyProfile(
+                    client: helperClient,
+                    stagingDirectory: config.mediaStagingDirectory
+                )
             )
         )
     }

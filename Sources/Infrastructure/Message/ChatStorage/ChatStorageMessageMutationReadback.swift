@@ -82,6 +82,72 @@ package struct ChatStorageMessageMutationReadback: MessageMutationReadback, Send
         }
     }
 
+    package func sentAttachment(
+        matching query: SentAttachmentReadbackQuery
+    ) async throws -> MessageSnapshot? {
+        let notBefore = WhatsAppDate.storedSeconds(from: query.notBefore.addingTimeInterval(-1))
+        return try await database.read { db in
+            let rows = try ChatStorageMessageRecord.fetchAll(
+                db,
+                sql: ChatStorageMessageRecord.selectSQL + """
+                    WHERE m.ZSTANZAID IS NOT NULL
+                      AND m.ZSTANZAID != ''
+                      AND m.ZISFROMME = 1
+                      AND m.ZMESSAGEDATE >= ?
+                    ORDER BY m.Z_PK DESC
+                    LIMIT 30
+                    """,
+                arguments: [notBefore]
+            )
+
+            return rows.first { row in
+                // send-document/audio/sticker/contact return no message id, so the
+                // row is identified by attachment kind + recency. The phone
+                // recipient is only a best-effort disambiguator (see sentMedia):
+                // modern @lid sessions whose partner name is not a phone number
+                // can never be phone-matched.
+                row.attachmentKindMatches(query.kind)
+                    && (row.matches(recipient: query.recipient)
+                        || !row.recipientCanMatchByPhone)
+                    && row.hasSuccessfulSendSignal
+                    && row.attachmentReady(for: query.kind)
+                    && row.mediaCaptionMatches(query.caption)
+                    && row.vcardNameMatches(query.vcardName)
+            }?.snapshot
+        }
+    }
+
+    package func sentAttachments(
+        matching query: SentAttachmentReadbackQuery,
+        limit: Int
+    ) async throws -> [MessageSnapshot] {
+        let notBefore = WhatsAppDate.storedSeconds(from: query.notBefore.addingTimeInterval(-1))
+        return try await database.read { db in
+            let rows = try ChatStorageMessageRecord.fetchAll(
+                db,
+                sql: ChatStorageMessageRecord.selectSQL + """
+                    WHERE m.ZSTANZAID IS NOT NULL
+                      AND m.ZSTANZAID != ''
+                      AND m.ZISFROMME = 1
+                      AND m.ZMESSAGEDATE >= ?
+                    ORDER BY m.Z_PK ASC
+                    LIMIT 100
+                    """,
+                arguments: [notBefore]
+            )
+
+            return rows.filter { row in
+                row.attachmentKindMatches(query.kind)
+                    && (row.matches(recipient: query.recipient)
+                        || !row.recipientCanMatchByPhone)
+                    && row.hasSuccessfulSendSignal
+                    && row.attachmentReady(for: query.kind)
+            }
+            .prefix(limit)
+            .map(\.snapshot)
+        }
+    }
+
     package func receipt(
         forMessageId messageId: String
     ) async throws -> MessageReceiptReadback? {

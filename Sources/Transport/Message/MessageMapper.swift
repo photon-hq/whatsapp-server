@@ -81,6 +81,49 @@ enum MessageMapper {
         }
     }
 
+    static func toDomain(_ proto: PWApp_ContactCard) -> ContactCardPayload {
+        ContactCardPayload(
+            name: proto.name.isEmpty ? nil : proto.name,
+            vcard: proto.hasVcard ? proto.vcard : nil,
+            phones: proto.phones,
+            emails: proto.emails,
+            organization: proto.hasOrganization ? proto.organization : nil
+        )
+    }
+
+    static func toProto(_ status: MessageDeliveryStatusSnapshot) -> PWApp_GetMessageStatusResponse {
+        var proto = PWApp_GetMessageStatusResponse()
+        proto.messageID = status.messageId
+        proto.status = toProto(status.status)
+        proto.statusCode = Int32(status.statusCode)
+        proto.isFromMe = status.isFromMe
+        proto.isSent = status.isSent
+        proto.isError = status.isError
+        proto.isPlayed = status.isPlayed
+        proto.text = status.text
+
+        return proto
+    }
+
+    private static func toProto(_ status: MessageDeliveryStatus) -> PWApp_MessageDeliveryStatus {
+        switch status {
+        case .pending:
+            .pending
+        case .sent:
+            .sent
+        case .delivered:
+            .delivered
+        case .read:
+            .read
+        case .played:
+            .played
+        case .error:
+            .error
+        case .unknown:
+            .unspecified
+        }
+    }
+
     static func toMessageResponse(_ message: MessageSnapshot) -> PWApp_MessageResponse {
         var response = PWApp_MessageResponse()
         response.message = toProto(message)

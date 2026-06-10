@@ -14,7 +14,25 @@ service MessageService {
 
   rpc SendMediaMessage(SendMediaMessageRequest) returns (MessageResponse);
 
+  rpc SendAlbum(SendAlbumRequest) returns (SendAlbumResponse);
+
+  rpc SendDocument(SendDocumentRequest) returns (MessageResponse);
+
+  rpc SendAudio(SendAudioRequest) returns (MessageResponse);
+
+  rpc SendSticker(SendStickerRequest) returns (MessageResponse);
+
+  rpc SendContact(SendContactRequest) returns (MessageResponse);
+
   rpc SendReaction(SendReactionRequest) returns (MessageResponse);
+
+  rpc EditMessage(EditMessageRequest) returns (MessageResponse);
+
+  rpc RevokeMessage(RevokeMessageRequest) returns (RemoveMessageResponse);
+
+  rpc DeleteMessage(DeleteMessageRequest) returns (RemoveMessageResponse);
+
+  rpc GetMessageStatus(GetMessageStatusRequest) returns (GetMessageStatusResponse);
 
   rpc GetMessage(GetMessageRequest) returns (MessageResponse);
 
@@ -91,6 +109,102 @@ message SendMediaMessageRequest {
 }
 
 
+message SendAlbumRequest {
+
+  string recipient = 1;
+
+  // 2 to 30 media items sharing the same kind (all images or all videos).
+  repeated MediaContent items = 2;
+
+  optional string client_message_id = 100;
+
+}
+
+
+message SendAlbumResponse {
+
+  // Persisted snapshots for the album items, oldest first.
+  repeated Message messages = 1;
+
+}
+
+
+message SendDocumentRequest {
+
+  string recipient = 1;
+
+  bytes data = 2;
+
+  optional string file_name = 3;
+
+  optional string mime_type = 4;
+
+  optional string caption = 5;
+
+  optional string client_message_id = 100;
+
+}
+
+
+message SendAudioRequest {
+
+  string recipient = 1;
+
+  // Voice-note audio payload. Must be a decodable audio container.
+  bytes data = 2;
+
+  optional string mime_type = 3;
+
+  optional string client_message_id = 100;
+
+}
+
+
+message SendStickerRequest {
+
+  string recipient = 1;
+
+  // Sticker image payload. WhatsApp converts it to WebP when needed.
+  bytes data = 2;
+
+  repeated string emojis = 3;
+
+  optional string accessibility_text = 4;
+
+  optional string client_message_id = 100;
+
+}
+
+
+message ContactCard {
+
+  // Display name. Optional when a full vCard is provided.
+  string name = 1;
+
+  // Complete serialized vCard. When absent one is synthesized from the
+  // name/phones/emails/organization fields.
+  optional string vcard = 2;
+
+  repeated string phones = 3;
+
+  repeated string emails = 4;
+
+  optional string organization = 5;
+
+}
+
+
+message SendContactRequest {
+
+  string recipient = 1;
+
+  repeated ContactCard contacts = 2;
+
+  optional string client_message_id = 100;
+
+}
+
+
 message SendReactionRequest {
 
   string message_id = 1;
@@ -98,6 +212,98 @@ message SendReactionRequest {
   string emoji = 2;
 
   optional string client_message_id = 100;
+
+}
+
+
+message EditMessageRequest {
+
+  // Target outgoing text message id (WAMessage.uniqueKey).
+  string message_id = 1;
+
+  // New plain text body.
+  string text = 2;
+
+  optional string client_message_id = 100;
+
+}
+
+
+message RevokeMessageRequest {
+
+  // Target outgoing message id (WAMessage.uniqueKey). "Delete for everyone".
+  string message_id = 1;
+
+  optional string client_message_id = 100;
+
+}
+
+
+message DeleteMessageRequest {
+
+  // Target message id (WAMessage.uniqueKey). Local-only delete.
+  string message_id = 1;
+
+  optional string client_message_id = 100;
+
+}
+
+
+message RemoveMessageResponse {
+
+  string message_id = 1;
+
+  // True once the local ChatStorage row is gone (or replaced by a revoke
+  // placeholder).
+  bool removed = 2;
+
+}
+
+
+enum MessageDeliveryStatus {
+
+  MESSAGE_DELIVERY_STATUS_UNSPECIFIED = 0;
+
+  MESSAGE_DELIVERY_STATUS_PENDING = 1;
+
+  MESSAGE_DELIVERY_STATUS_SENT = 2;
+
+  MESSAGE_DELIVERY_STATUS_DELIVERED = 3;
+
+  MESSAGE_DELIVERY_STATUS_READ = 4;
+
+  MESSAGE_DELIVERY_STATUS_PLAYED = 5;
+
+  MESSAGE_DELIVERY_STATUS_ERROR = 6;
+
+}
+
+
+message GetMessageStatusRequest {
+
+  string message_id = 1;
+
+}
+
+
+message GetMessageStatusResponse {
+
+  string message_id = 1;
+
+  MessageDeliveryStatus status = 2;
+
+  // Raw -[WAMessage getComputedMessageStatus] value.
+  int32 status_code = 3;
+
+  bool is_from_me = 4;
+
+  bool is_sent = 5;
+
+  bool is_error = 6;
+
+  bool is_played = 7;
+
+  string text = 8;
 
 }
 

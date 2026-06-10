@@ -12,15 +12,18 @@ package struct GRPCTransportServer: Sendable {
         package let messages: MessageService
         package let polls: PollService
         package let events: EventService
+        package let profile: ProfileService
 
         package init(
             messages: MessageService,
             polls: PollService,
-            events: EventService
+            events: EventService,
+            profile: ProfileService
         ) {
             self.messages = messages
             self.polls = polls
             self.events = events
+            self.profile = profile
         }
 
     }
@@ -92,6 +95,7 @@ package struct GRPCTransportServer: Sendable {
             MessageServiceHandler(messages: services.messages),
             PollServiceHandler(polls: services.polls),
             EventServiceHandler(events: services.events),
+            ProfileServiceHandler(profile: services.profile),
         ]
     }
 

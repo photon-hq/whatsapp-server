@@ -5,13 +5,30 @@ import XCTest
 private actor MessageCommandRecorder:
     SendTextMessage,
     SendMediaMessage,
+    SendAlbum,
+    SendDocument,
+    SendAudio,
+    SendSticker,
+    SendContact,
     SendReaction,
+    EditMessage,
+    RevokeMessage,
+    DeleteMessage,
+    MessageStatusQuerying,
     MessageQuerying,
     MessageMutationReadback
 {
 
     private(set) var lastTextCommand: SendTextMessageCommand?
     private(set) var lastMediaCommand: SendMediaMessageCommand?
+    private(set) var lastAlbumCommand: SendAlbumCommand?
+    private(set) var lastDocumentCommand: SendDocumentCommand?
+    private(set) var lastAudioCommand: SendAudioCommand?
+    private(set) var lastStickerCommand: SendStickerCommand?
+    private(set) var lastContactCommand: SendContactCommand?
+    private(set) var lastEditCommand: EditMessageCommand?
+    private(set) var lastRevokedMessageId: String?
+    private(set) var lastDeletedMessageId: String?
     private(set) var lastReactionCommand: SendReactionCommand?
     private(set) var textSendCount = 0
     private(set) var reactionSendCount = 0
@@ -24,6 +41,11 @@ private actor MessageCommandRecorder:
     )
     var sentMediaReadback: MessageSnapshot? = MessageSnapshot(
         messageId: "media-1",
+        recipient: "11234567890",
+        isFromMe: true
+    )
+    var sentAttachmentReadback: MessageSnapshot? = MessageSnapshot(
+        messageId: "attachment-1",
         recipient: "11234567890",
         isFromMe: true
     )
@@ -53,6 +75,51 @@ private actor MessageCommandRecorder:
 
     func sendMediaMessage(_ command: SendMediaMessageCommand) async throws {
         lastMediaCommand = command
+    }
+
+    func sendAlbum(_ command: SendAlbumCommand) async throws {
+        lastAlbumCommand = command
+    }
+
+    func sendDocument(_ command: SendDocumentCommand) async throws {
+        lastDocumentCommand = command
+    }
+
+    func sendAudio(_ command: SendAudioCommand) async throws {
+        lastAudioCommand = command
+    }
+
+    func sendSticker(_ command: SendStickerCommand) async throws {
+        lastStickerCommand = command
+    }
+
+    func sendContact(_ command: SendContactCommand) async throws {
+        lastContactCommand = command
+    }
+
+    func editMessage(_ command: EditMessageCommand) async throws {
+        lastEditCommand = command
+    }
+
+    func revokeMessage(messageId: String) async throws {
+        lastRevokedMessageId = messageId
+    }
+
+    func deleteMessage(messageId: String) async throws {
+        lastDeletedMessageId = messageId
+    }
+
+    func messageStatus(messageId: String) async throws -> MessageDeliveryStatusSnapshot {
+        MessageDeliveryStatusSnapshot(
+            messageId: messageId,
+            status: .delivered,
+            statusCode: 2,
+            isFromMe: true,
+            isSent: true,
+            isError: false,
+            isPlayed: false,
+            text: "status text"
+        )
     }
 
     func sendReaction(_ command: SendReactionCommand) async throws {
@@ -91,6 +158,23 @@ private actor MessageCommandRecorder:
         matching query: SentMediaReadbackQuery
     ) async throws -> MessageSnapshot? {
         sentMediaReadback
+    }
+
+    func sentAttachment(
+        matching query: SentAttachmentReadbackQuery
+    ) async throws -> MessageSnapshot? {
+        sentAttachmentReadback
+    }
+
+    func sentAttachments(
+        matching query: SentAttachmentReadbackQuery,
+        limit: Int
+    ) async throws -> [MessageSnapshot] {
+        guard let snapshot = sentAttachmentReadback else {
+            return []
+        }
+
+        return Array(repeating: snapshot, count: limit)
     }
 
     func message(
@@ -460,7 +544,16 @@ private func messageService(
     MessageService(
         sendTextMessage: recorder,
         sendMediaMessage: recorder,
+        sendAlbum: recorder,
+        sendDocument: recorder,
+        sendAudio: recorder,
+        sendSticker: recorder,
+        sendContact: recorder,
         sendReaction: recorder,
+        editMessage: recorder,
+        revokeMessage: recorder,
+        deleteMessage: recorder,
+        messageStatusQuerying: recorder,
         messageQuerying: recorder,
         mutationReadback: recorder,
         mutationPolicy: applicationTestMutationPolicy(checker: checker),

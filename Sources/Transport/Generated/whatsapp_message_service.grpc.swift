@@ -46,6 +46,71 @@ internal enum PWApp_MessageService: Sendable {
                 type: .unary
             )
         }
+        /// Namespace for "SendAlbum" metadata.
+        internal enum SendAlbum: Sendable {
+            /// Request type for "SendAlbum".
+            internal typealias Input = PWApp_SendAlbumRequest
+            /// Response type for "SendAlbum".
+            internal typealias Output = PWApp_SendAlbumResponse
+            /// Descriptor for "SendAlbum".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "photon.whatsapp.v1.MessageService"),
+                method: "SendAlbum",
+                type: .unary
+            )
+        }
+        /// Namespace for "SendDocument" metadata.
+        internal enum SendDocument: Sendable {
+            /// Request type for "SendDocument".
+            internal typealias Input = PWApp_SendDocumentRequest
+            /// Response type for "SendDocument".
+            internal typealias Output = PWApp_MessageResponse
+            /// Descriptor for "SendDocument".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "photon.whatsapp.v1.MessageService"),
+                method: "SendDocument",
+                type: .unary
+            )
+        }
+        /// Namespace for "SendAudio" metadata.
+        internal enum SendAudio: Sendable {
+            /// Request type for "SendAudio".
+            internal typealias Input = PWApp_SendAudioRequest
+            /// Response type for "SendAudio".
+            internal typealias Output = PWApp_MessageResponse
+            /// Descriptor for "SendAudio".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "photon.whatsapp.v1.MessageService"),
+                method: "SendAudio",
+                type: .unary
+            )
+        }
+        /// Namespace for "SendSticker" metadata.
+        internal enum SendSticker: Sendable {
+            /// Request type for "SendSticker".
+            internal typealias Input = PWApp_SendStickerRequest
+            /// Response type for "SendSticker".
+            internal typealias Output = PWApp_MessageResponse
+            /// Descriptor for "SendSticker".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "photon.whatsapp.v1.MessageService"),
+                method: "SendSticker",
+                type: .unary
+            )
+        }
+        /// Namespace for "SendContact" metadata.
+        internal enum SendContact: Sendable {
+            /// Request type for "SendContact".
+            internal typealias Input = PWApp_SendContactRequest
+            /// Response type for "SendContact".
+            internal typealias Output = PWApp_MessageResponse
+            /// Descriptor for "SendContact".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "photon.whatsapp.v1.MessageService"),
+                method: "SendContact",
+                type: .unary
+            )
+        }
         /// Namespace for "SendReaction" metadata.
         internal enum SendReaction: Sendable {
             /// Request type for "SendReaction".
@@ -56,6 +121,58 @@ internal enum PWApp_MessageService: Sendable {
             internal static let descriptor = GRPCCore.MethodDescriptor(
                 service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "photon.whatsapp.v1.MessageService"),
                 method: "SendReaction",
+                type: .unary
+            )
+        }
+        /// Namespace for "EditMessage" metadata.
+        internal enum EditMessage: Sendable {
+            /// Request type for "EditMessage".
+            internal typealias Input = PWApp_EditMessageRequest
+            /// Response type for "EditMessage".
+            internal typealias Output = PWApp_MessageResponse
+            /// Descriptor for "EditMessage".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "photon.whatsapp.v1.MessageService"),
+                method: "EditMessage",
+                type: .unary
+            )
+        }
+        /// Namespace for "RevokeMessage" metadata.
+        internal enum RevokeMessage: Sendable {
+            /// Request type for "RevokeMessage".
+            internal typealias Input = PWApp_RevokeMessageRequest
+            /// Response type for "RevokeMessage".
+            internal typealias Output = PWApp_RemoveMessageResponse
+            /// Descriptor for "RevokeMessage".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "photon.whatsapp.v1.MessageService"),
+                method: "RevokeMessage",
+                type: .unary
+            )
+        }
+        /// Namespace for "DeleteMessage" metadata.
+        internal enum DeleteMessage: Sendable {
+            /// Request type for "DeleteMessage".
+            internal typealias Input = PWApp_DeleteMessageRequest
+            /// Response type for "DeleteMessage".
+            internal typealias Output = PWApp_RemoveMessageResponse
+            /// Descriptor for "DeleteMessage".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "photon.whatsapp.v1.MessageService"),
+                method: "DeleteMessage",
+                type: .unary
+            )
+        }
+        /// Namespace for "GetMessageStatus" metadata.
+        internal enum GetMessageStatus: Sendable {
+            /// Request type for "GetMessageStatus".
+            internal typealias Input = PWApp_GetMessageStatusRequest
+            /// Response type for "GetMessageStatus".
+            internal typealias Output = PWApp_GetMessageStatusResponse
+            /// Descriptor for "GetMessageStatus".
+            internal static let descriptor = GRPCCore.MethodDescriptor(
+                service: GRPCCore.ServiceDescriptor(fullyQualifiedService: "photon.whatsapp.v1.MessageService"),
+                method: "GetMessageStatus",
                 type: .unary
             )
         }
@@ -115,7 +232,16 @@ internal enum PWApp_MessageService: Sendable {
         internal static let descriptors: [GRPCCore.MethodDescriptor] = [
             SendTextMessage.descriptor,
             SendMediaMessage.descriptor,
+            SendAlbum.descriptor,
+            SendDocument.descriptor,
+            SendAudio.descriptor,
+            SendSticker.descriptor,
+            SendContact.descriptor,
             SendReaction.descriptor,
+            EditMessage.descriptor,
+            RevokeMessage.descriptor,
+            DeleteMessage.descriptor,
+            GetMessageStatus.descriptor,
             GetMessage.descriptor,
             ListRecentMessages.descriptor,
             ListChatMessages.descriptor,
@@ -173,6 +299,76 @@ extension PWApp_MessageService {
             context: GRPCCore.ServerContext
         ) async throws -> GRPCCore.StreamingServerResponse<PWApp_MessageResponse>
 
+        /// Handle the "SendAlbum" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request of `PWApp_SendAlbumRequest` messages.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A streaming response of `PWApp_SendAlbumResponse` messages.
+        func sendAlbum(
+            request: GRPCCore.StreamingServerRequest<PWApp_SendAlbumRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.StreamingServerResponse<PWApp_SendAlbumResponse>
+
+        /// Handle the "SendDocument" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request of `PWApp_SendDocumentRequest` messages.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A streaming response of `PWApp_MessageResponse` messages.
+        func sendDocument(
+            request: GRPCCore.StreamingServerRequest<PWApp_SendDocumentRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.StreamingServerResponse<PWApp_MessageResponse>
+
+        /// Handle the "SendAudio" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request of `PWApp_SendAudioRequest` messages.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A streaming response of `PWApp_MessageResponse` messages.
+        func sendAudio(
+            request: GRPCCore.StreamingServerRequest<PWApp_SendAudioRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.StreamingServerResponse<PWApp_MessageResponse>
+
+        /// Handle the "SendSticker" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request of `PWApp_SendStickerRequest` messages.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A streaming response of `PWApp_MessageResponse` messages.
+        func sendSticker(
+            request: GRPCCore.StreamingServerRequest<PWApp_SendStickerRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.StreamingServerResponse<PWApp_MessageResponse>
+
+        /// Handle the "SendContact" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request of `PWApp_SendContactRequest` messages.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A streaming response of `PWApp_MessageResponse` messages.
+        func sendContact(
+            request: GRPCCore.StreamingServerRequest<PWApp_SendContactRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.StreamingServerResponse<PWApp_MessageResponse>
+
         /// Handle the "SendReaction" method.
         ///
         /// - Parameters:
@@ -186,6 +382,62 @@ extension PWApp_MessageService {
             request: GRPCCore.StreamingServerRequest<PWApp_SendReactionRequest>,
             context: GRPCCore.ServerContext
         ) async throws -> GRPCCore.StreamingServerResponse<PWApp_MessageResponse>
+
+        /// Handle the "EditMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request of `PWApp_EditMessageRequest` messages.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A streaming response of `PWApp_MessageResponse` messages.
+        func editMessage(
+            request: GRPCCore.StreamingServerRequest<PWApp_EditMessageRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.StreamingServerResponse<PWApp_MessageResponse>
+
+        /// Handle the "RevokeMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request of `PWApp_RevokeMessageRequest` messages.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A streaming response of `PWApp_RemoveMessageResponse` messages.
+        func revokeMessage(
+            request: GRPCCore.StreamingServerRequest<PWApp_RevokeMessageRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.StreamingServerResponse<PWApp_RemoveMessageResponse>
+
+        /// Handle the "DeleteMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request of `PWApp_DeleteMessageRequest` messages.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A streaming response of `PWApp_RemoveMessageResponse` messages.
+        func deleteMessage(
+            request: GRPCCore.StreamingServerRequest<PWApp_DeleteMessageRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.StreamingServerResponse<PWApp_RemoveMessageResponse>
+
+        /// Handle the "GetMessageStatus" method.
+        ///
+        /// - Parameters:
+        ///   - request: A streaming request of `PWApp_GetMessageStatusRequest` messages.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A streaming response of `PWApp_GetMessageStatusResponse` messages.
+        func getMessageStatus(
+            request: GRPCCore.StreamingServerRequest<PWApp_GetMessageStatusRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.StreamingServerResponse<PWApp_GetMessageStatusResponse>
 
         /// Handle the "GetMessage" method.
         ///
@@ -280,6 +532,76 @@ extension PWApp_MessageService {
             context: GRPCCore.ServerContext
         ) async throws -> GRPCCore.ServerResponse<PWApp_MessageResponse>
 
+        /// Handle the "SendAlbum" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendAlbumRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A response containing a single `PWApp_SendAlbumResponse` message.
+        func sendAlbum(
+            request: GRPCCore.ServerRequest<PWApp_SendAlbumRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.ServerResponse<PWApp_SendAlbumResponse>
+
+        /// Handle the "SendDocument" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendDocumentRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A response containing a single `PWApp_MessageResponse` message.
+        func sendDocument(
+            request: GRPCCore.ServerRequest<PWApp_SendDocumentRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.ServerResponse<PWApp_MessageResponse>
+
+        /// Handle the "SendAudio" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendAudioRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A response containing a single `PWApp_MessageResponse` message.
+        func sendAudio(
+            request: GRPCCore.ServerRequest<PWApp_SendAudioRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.ServerResponse<PWApp_MessageResponse>
+
+        /// Handle the "SendSticker" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendStickerRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A response containing a single `PWApp_MessageResponse` message.
+        func sendSticker(
+            request: GRPCCore.ServerRequest<PWApp_SendStickerRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.ServerResponse<PWApp_MessageResponse>
+
+        /// Handle the "SendContact" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendContactRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A response containing a single `PWApp_MessageResponse` message.
+        func sendContact(
+            request: GRPCCore.ServerRequest<PWApp_SendContactRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.ServerResponse<PWApp_MessageResponse>
+
         /// Handle the "SendReaction" method.
         ///
         /// - Parameters:
@@ -293,6 +615,62 @@ extension PWApp_MessageService {
             request: GRPCCore.ServerRequest<PWApp_SendReactionRequest>,
             context: GRPCCore.ServerContext
         ) async throws -> GRPCCore.ServerResponse<PWApp_MessageResponse>
+
+        /// Handle the "EditMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_EditMessageRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A response containing a single `PWApp_MessageResponse` message.
+        func editMessage(
+            request: GRPCCore.ServerRequest<PWApp_EditMessageRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.ServerResponse<PWApp_MessageResponse>
+
+        /// Handle the "RevokeMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_RevokeMessageRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A response containing a single `PWApp_RemoveMessageResponse` message.
+        func revokeMessage(
+            request: GRPCCore.ServerRequest<PWApp_RevokeMessageRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.ServerResponse<PWApp_RemoveMessageResponse>
+
+        /// Handle the "DeleteMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_DeleteMessageRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A response containing a single `PWApp_RemoveMessageResponse` message.
+        func deleteMessage(
+            request: GRPCCore.ServerRequest<PWApp_DeleteMessageRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.ServerResponse<PWApp_RemoveMessageResponse>
+
+        /// Handle the "GetMessageStatus" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_GetMessageStatusRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A response containing a single `PWApp_GetMessageStatusResponse` message.
+        func getMessageStatus(
+            request: GRPCCore.ServerRequest<PWApp_GetMessageStatusRequest>,
+            context: GRPCCore.ServerContext
+        ) async throws -> GRPCCore.ServerResponse<PWApp_GetMessageStatusResponse>
 
         /// Handle the "GetMessage" method.
         ///
@@ -385,6 +763,76 @@ extension PWApp_MessageService {
             context: GRPCCore.ServerContext
         ) async throws -> PWApp_MessageResponse
 
+        /// Handle the "SendAlbum" method.
+        ///
+        /// - Parameters:
+        ///   - request: A `PWApp_SendAlbumRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A `PWApp_SendAlbumResponse` to respond with.
+        func sendAlbum(
+            request: PWApp_SendAlbumRequest,
+            context: GRPCCore.ServerContext
+        ) async throws -> PWApp_SendAlbumResponse
+
+        /// Handle the "SendDocument" method.
+        ///
+        /// - Parameters:
+        ///   - request: A `PWApp_SendDocumentRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A `PWApp_MessageResponse` to respond with.
+        func sendDocument(
+            request: PWApp_SendDocumentRequest,
+            context: GRPCCore.ServerContext
+        ) async throws -> PWApp_MessageResponse
+
+        /// Handle the "SendAudio" method.
+        ///
+        /// - Parameters:
+        ///   - request: A `PWApp_SendAudioRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A `PWApp_MessageResponse` to respond with.
+        func sendAudio(
+            request: PWApp_SendAudioRequest,
+            context: GRPCCore.ServerContext
+        ) async throws -> PWApp_MessageResponse
+
+        /// Handle the "SendSticker" method.
+        ///
+        /// - Parameters:
+        ///   - request: A `PWApp_SendStickerRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A `PWApp_MessageResponse` to respond with.
+        func sendSticker(
+            request: PWApp_SendStickerRequest,
+            context: GRPCCore.ServerContext
+        ) async throws -> PWApp_MessageResponse
+
+        /// Handle the "SendContact" method.
+        ///
+        /// - Parameters:
+        ///   - request: A `PWApp_SendContactRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A `PWApp_MessageResponse` to respond with.
+        func sendContact(
+            request: PWApp_SendContactRequest,
+            context: GRPCCore.ServerContext
+        ) async throws -> PWApp_MessageResponse
+
         /// Handle the "SendReaction" method.
         ///
         /// - Parameters:
@@ -398,6 +846,62 @@ extension PWApp_MessageService {
             request: PWApp_SendReactionRequest,
             context: GRPCCore.ServerContext
         ) async throws -> PWApp_MessageResponse
+
+        /// Handle the "EditMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A `PWApp_EditMessageRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A `PWApp_MessageResponse` to respond with.
+        func editMessage(
+            request: PWApp_EditMessageRequest,
+            context: GRPCCore.ServerContext
+        ) async throws -> PWApp_MessageResponse
+
+        /// Handle the "RevokeMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A `PWApp_RevokeMessageRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A `PWApp_RemoveMessageResponse` to respond with.
+        func revokeMessage(
+            request: PWApp_RevokeMessageRequest,
+            context: GRPCCore.ServerContext
+        ) async throws -> PWApp_RemoveMessageResponse
+
+        /// Handle the "DeleteMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A `PWApp_DeleteMessageRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A `PWApp_RemoveMessageResponse` to respond with.
+        func deleteMessage(
+            request: PWApp_DeleteMessageRequest,
+            context: GRPCCore.ServerContext
+        ) async throws -> PWApp_RemoveMessageResponse
+
+        /// Handle the "GetMessageStatus" method.
+        ///
+        /// - Parameters:
+        ///   - request: A `PWApp_GetMessageStatusRequest` message.
+        ///   - context: Context providing information about the RPC.
+        /// - Throws: Any error which occurred during the processing of the request. Thrown errors
+        ///     of type `RPCError` are mapped to appropriate statuses. All other errors are converted
+        ///     to an internal error.
+        /// - Returns: A `PWApp_GetMessageStatusResponse` to respond with.
+        func getMessageStatus(
+            request: PWApp_GetMessageStatusRequest,
+            context: GRPCCore.ServerContext
+        ) async throws -> PWApp_GetMessageStatusResponse
 
         /// Handle the "GetMessage" method.
         ///
@@ -485,11 +989,110 @@ extension PWApp_MessageService.StreamingServiceProtocol {
             }
         )
         router.registerHandler(
+            forMethod: PWApp_MessageService.Method.SendAlbum.descriptor,
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_SendAlbumRequest>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_SendAlbumResponse>(),
+            handler: { request, context in
+                try await self.sendAlbum(
+                    request: request,
+                    context: context
+                )
+            }
+        )
+        router.registerHandler(
+            forMethod: PWApp_MessageService.Method.SendDocument.descriptor,
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_SendDocumentRequest>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_MessageResponse>(),
+            handler: { request, context in
+                try await self.sendDocument(
+                    request: request,
+                    context: context
+                )
+            }
+        )
+        router.registerHandler(
+            forMethod: PWApp_MessageService.Method.SendAudio.descriptor,
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_SendAudioRequest>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_MessageResponse>(),
+            handler: { request, context in
+                try await self.sendAudio(
+                    request: request,
+                    context: context
+                )
+            }
+        )
+        router.registerHandler(
+            forMethod: PWApp_MessageService.Method.SendSticker.descriptor,
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_SendStickerRequest>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_MessageResponse>(),
+            handler: { request, context in
+                try await self.sendSticker(
+                    request: request,
+                    context: context
+                )
+            }
+        )
+        router.registerHandler(
+            forMethod: PWApp_MessageService.Method.SendContact.descriptor,
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_SendContactRequest>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_MessageResponse>(),
+            handler: { request, context in
+                try await self.sendContact(
+                    request: request,
+                    context: context
+                )
+            }
+        )
+        router.registerHandler(
             forMethod: PWApp_MessageService.Method.SendReaction.descriptor,
             deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_SendReactionRequest>(),
             serializer: GRPCProtobuf.ProtobufSerializer<PWApp_MessageResponse>(),
             handler: { request, context in
                 try await self.sendReaction(
+                    request: request,
+                    context: context
+                )
+            }
+        )
+        router.registerHandler(
+            forMethod: PWApp_MessageService.Method.EditMessage.descriptor,
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_EditMessageRequest>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_MessageResponse>(),
+            handler: { request, context in
+                try await self.editMessage(
+                    request: request,
+                    context: context
+                )
+            }
+        )
+        router.registerHandler(
+            forMethod: PWApp_MessageService.Method.RevokeMessage.descriptor,
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_RevokeMessageRequest>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_RemoveMessageResponse>(),
+            handler: { request, context in
+                try await self.revokeMessage(
+                    request: request,
+                    context: context
+                )
+            }
+        )
+        router.registerHandler(
+            forMethod: PWApp_MessageService.Method.DeleteMessage.descriptor,
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_DeleteMessageRequest>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_RemoveMessageResponse>(),
+            handler: { request, context in
+                try await self.deleteMessage(
+                    request: request,
+                    context: context
+                )
+            }
+        )
+        router.registerHandler(
+            forMethod: PWApp_MessageService.Method.GetMessageStatus.descriptor,
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_GetMessageStatusRequest>(),
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_GetMessageStatusResponse>(),
+            handler: { request, context in
+                try await self.getMessageStatus(
                     request: request,
                     context: context
                 )
@@ -567,11 +1170,110 @@ extension PWApp_MessageService.ServiceProtocol {
         return GRPCCore.StreamingServerResponse(single: response)
     }
 
+    internal func sendAlbum(
+        request: GRPCCore.StreamingServerRequest<PWApp_SendAlbumRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.StreamingServerResponse<PWApp_SendAlbumResponse> {
+        let response = try await self.sendAlbum(
+            request: GRPCCore.ServerRequest(stream: request),
+            context: context
+        )
+        return GRPCCore.StreamingServerResponse(single: response)
+    }
+
+    internal func sendDocument(
+        request: GRPCCore.StreamingServerRequest<PWApp_SendDocumentRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.StreamingServerResponse<PWApp_MessageResponse> {
+        let response = try await self.sendDocument(
+            request: GRPCCore.ServerRequest(stream: request),
+            context: context
+        )
+        return GRPCCore.StreamingServerResponse(single: response)
+    }
+
+    internal func sendAudio(
+        request: GRPCCore.StreamingServerRequest<PWApp_SendAudioRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.StreamingServerResponse<PWApp_MessageResponse> {
+        let response = try await self.sendAudio(
+            request: GRPCCore.ServerRequest(stream: request),
+            context: context
+        )
+        return GRPCCore.StreamingServerResponse(single: response)
+    }
+
+    internal func sendSticker(
+        request: GRPCCore.StreamingServerRequest<PWApp_SendStickerRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.StreamingServerResponse<PWApp_MessageResponse> {
+        let response = try await self.sendSticker(
+            request: GRPCCore.ServerRequest(stream: request),
+            context: context
+        )
+        return GRPCCore.StreamingServerResponse(single: response)
+    }
+
+    internal func sendContact(
+        request: GRPCCore.StreamingServerRequest<PWApp_SendContactRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.StreamingServerResponse<PWApp_MessageResponse> {
+        let response = try await self.sendContact(
+            request: GRPCCore.ServerRequest(stream: request),
+            context: context
+        )
+        return GRPCCore.StreamingServerResponse(single: response)
+    }
+
     internal func sendReaction(
         request: GRPCCore.StreamingServerRequest<PWApp_SendReactionRequest>,
         context: GRPCCore.ServerContext
     ) async throws -> GRPCCore.StreamingServerResponse<PWApp_MessageResponse> {
         let response = try await self.sendReaction(
+            request: GRPCCore.ServerRequest(stream: request),
+            context: context
+        )
+        return GRPCCore.StreamingServerResponse(single: response)
+    }
+
+    internal func editMessage(
+        request: GRPCCore.StreamingServerRequest<PWApp_EditMessageRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.StreamingServerResponse<PWApp_MessageResponse> {
+        let response = try await self.editMessage(
+            request: GRPCCore.ServerRequest(stream: request),
+            context: context
+        )
+        return GRPCCore.StreamingServerResponse(single: response)
+    }
+
+    internal func revokeMessage(
+        request: GRPCCore.StreamingServerRequest<PWApp_RevokeMessageRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.StreamingServerResponse<PWApp_RemoveMessageResponse> {
+        let response = try await self.revokeMessage(
+            request: GRPCCore.ServerRequest(stream: request),
+            context: context
+        )
+        return GRPCCore.StreamingServerResponse(single: response)
+    }
+
+    internal func deleteMessage(
+        request: GRPCCore.StreamingServerRequest<PWApp_DeleteMessageRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.StreamingServerResponse<PWApp_RemoveMessageResponse> {
+        let response = try await self.deleteMessage(
+            request: GRPCCore.ServerRequest(stream: request),
+            context: context
+        )
+        return GRPCCore.StreamingServerResponse(single: response)
+    }
+
+    internal func getMessageStatus(
+        request: GRPCCore.StreamingServerRequest<PWApp_GetMessageStatusRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.StreamingServerResponse<PWApp_GetMessageStatusResponse> {
+        let response = try await self.getMessageStatus(
             request: GRPCCore.ServerRequest(stream: request),
             context: context
         )
@@ -652,12 +1354,129 @@ extension PWApp_MessageService.SimpleServiceProtocol {
         )
     }
 
+    internal func sendAlbum(
+        request: GRPCCore.ServerRequest<PWApp_SendAlbumRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.ServerResponse<PWApp_SendAlbumResponse> {
+        return GRPCCore.ServerResponse<PWApp_SendAlbumResponse>(
+            message: try await self.sendAlbum(
+                request: request.message,
+                context: context
+            ),
+            metadata: [:]
+        )
+    }
+
+    internal func sendDocument(
+        request: GRPCCore.ServerRequest<PWApp_SendDocumentRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.ServerResponse<PWApp_MessageResponse> {
+        return GRPCCore.ServerResponse<PWApp_MessageResponse>(
+            message: try await self.sendDocument(
+                request: request.message,
+                context: context
+            ),
+            metadata: [:]
+        )
+    }
+
+    internal func sendAudio(
+        request: GRPCCore.ServerRequest<PWApp_SendAudioRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.ServerResponse<PWApp_MessageResponse> {
+        return GRPCCore.ServerResponse<PWApp_MessageResponse>(
+            message: try await self.sendAudio(
+                request: request.message,
+                context: context
+            ),
+            metadata: [:]
+        )
+    }
+
+    internal func sendSticker(
+        request: GRPCCore.ServerRequest<PWApp_SendStickerRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.ServerResponse<PWApp_MessageResponse> {
+        return GRPCCore.ServerResponse<PWApp_MessageResponse>(
+            message: try await self.sendSticker(
+                request: request.message,
+                context: context
+            ),
+            metadata: [:]
+        )
+    }
+
+    internal func sendContact(
+        request: GRPCCore.ServerRequest<PWApp_SendContactRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.ServerResponse<PWApp_MessageResponse> {
+        return GRPCCore.ServerResponse<PWApp_MessageResponse>(
+            message: try await self.sendContact(
+                request: request.message,
+                context: context
+            ),
+            metadata: [:]
+        )
+    }
+
     internal func sendReaction(
         request: GRPCCore.ServerRequest<PWApp_SendReactionRequest>,
         context: GRPCCore.ServerContext
     ) async throws -> GRPCCore.ServerResponse<PWApp_MessageResponse> {
         return GRPCCore.ServerResponse<PWApp_MessageResponse>(
             message: try await self.sendReaction(
+                request: request.message,
+                context: context
+            ),
+            metadata: [:]
+        )
+    }
+
+    internal func editMessage(
+        request: GRPCCore.ServerRequest<PWApp_EditMessageRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.ServerResponse<PWApp_MessageResponse> {
+        return GRPCCore.ServerResponse<PWApp_MessageResponse>(
+            message: try await self.editMessage(
+                request: request.message,
+                context: context
+            ),
+            metadata: [:]
+        )
+    }
+
+    internal func revokeMessage(
+        request: GRPCCore.ServerRequest<PWApp_RevokeMessageRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.ServerResponse<PWApp_RemoveMessageResponse> {
+        return GRPCCore.ServerResponse<PWApp_RemoveMessageResponse>(
+            message: try await self.revokeMessage(
+                request: request.message,
+                context: context
+            ),
+            metadata: [:]
+        )
+    }
+
+    internal func deleteMessage(
+        request: GRPCCore.ServerRequest<PWApp_DeleteMessageRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.ServerResponse<PWApp_RemoveMessageResponse> {
+        return GRPCCore.ServerResponse<PWApp_RemoveMessageResponse>(
+            message: try await self.deleteMessage(
+                request: request.message,
+                context: context
+            ),
+            metadata: [:]
+        )
+    }
+
+    internal func getMessageStatus(
+        request: GRPCCore.ServerRequest<PWApp_GetMessageStatusRequest>,
+        context: GRPCCore.ServerContext
+    ) async throws -> GRPCCore.ServerResponse<PWApp_GetMessageStatusResponse> {
+        return GRPCCore.ServerResponse<PWApp_GetMessageStatusResponse>(
+            message: try await self.getMessageStatus(
                 request: request.message,
                 context: context
             ),
@@ -769,6 +1588,101 @@ extension PWApp_MessageService {
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
+        /// Call the "SendAlbum" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendAlbumRequest` message.
+        ///   - serializer: A serializer for `PWApp_SendAlbumRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_SendAlbumResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func sendAlbum<Result>(
+            request: GRPCCore.ClientRequest<PWApp_SendAlbumRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_SendAlbumRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_SendAlbumResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_SendAlbumResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "SendDocument" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendDocumentRequest` message.
+        ///   - serializer: A serializer for `PWApp_SendDocumentRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_MessageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func sendDocument<Result>(
+            request: GRPCCore.ClientRequest<PWApp_SendDocumentRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_SendDocumentRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_MessageResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "SendAudio" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendAudioRequest` message.
+        ///   - serializer: A serializer for `PWApp_SendAudioRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_MessageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func sendAudio<Result>(
+            request: GRPCCore.ClientRequest<PWApp_SendAudioRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_SendAudioRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_MessageResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "SendSticker" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendStickerRequest` message.
+        ///   - serializer: A serializer for `PWApp_SendStickerRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_MessageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func sendSticker<Result>(
+            request: GRPCCore.ClientRequest<PWApp_SendStickerRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_SendStickerRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_MessageResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "SendContact" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendContactRequest` message.
+        ///   - serializer: A serializer for `PWApp_SendContactRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_MessageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func sendContact<Result>(
+            request: GRPCCore.ClientRequest<PWApp_SendContactRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_SendContactRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_MessageResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
         /// Call the "SendReaction" method.
         ///
         /// - Parameters:
@@ -786,6 +1700,82 @@ extension PWApp_MessageService {
             deserializer: some GRPCCore.MessageDeserializer<PWApp_MessageResponse>,
             options: GRPCCore.CallOptions,
             onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "EditMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_EditMessageRequest` message.
+        ///   - serializer: A serializer for `PWApp_EditMessageRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_MessageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func editMessage<Result>(
+            request: GRPCCore.ClientRequest<PWApp_EditMessageRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_EditMessageRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_MessageResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "RevokeMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_RevokeMessageRequest` message.
+        ///   - serializer: A serializer for `PWApp_RevokeMessageRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_RemoveMessageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func revokeMessage<Result>(
+            request: GRPCCore.ClientRequest<PWApp_RevokeMessageRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_RevokeMessageRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_RemoveMessageResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_RemoveMessageResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "DeleteMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_DeleteMessageRequest` message.
+        ///   - serializer: A serializer for `PWApp_DeleteMessageRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_RemoveMessageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func deleteMessage<Result>(
+            request: GRPCCore.ClientRequest<PWApp_DeleteMessageRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_DeleteMessageRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_RemoveMessageResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_RemoveMessageResponse>) async throws -> Result
+        ) async throws -> Result where Result: Sendable
+
+        /// Call the "GetMessageStatus" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_GetMessageStatusRequest` message.
+        ///   - serializer: A serializer for `PWApp_GetMessageStatusRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_GetMessageStatusResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        func getMessageStatus<Result>(
+            request: GRPCCore.ClientRequest<PWApp_GetMessageStatusRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_GetMessageStatusRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_GetMessageStatusResponse>,
+            options: GRPCCore.CallOptions,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_GetMessageStatusResponse>) async throws -> Result
         ) async throws -> Result where Result: Sendable
 
         /// Call the "GetMessage" method.
@@ -941,6 +1931,156 @@ extension PWApp_MessageService {
             )
         }
 
+        /// Call the "SendAlbum" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendAlbumRequest` message.
+        ///   - serializer: A serializer for `PWApp_SendAlbumRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_SendAlbumResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func sendAlbum<Result>(
+            request: GRPCCore.ClientRequest<PWApp_SendAlbumRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_SendAlbumRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_SendAlbumResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_SendAlbumResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: PWApp_MessageService.Method.SendAlbum.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "SendDocument" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendDocumentRequest` message.
+        ///   - serializer: A serializer for `PWApp_SendDocumentRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_MessageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func sendDocument<Result>(
+            request: GRPCCore.ClientRequest<PWApp_SendDocumentRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_SendDocumentRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_MessageResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: PWApp_MessageService.Method.SendDocument.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "SendAudio" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendAudioRequest` message.
+        ///   - serializer: A serializer for `PWApp_SendAudioRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_MessageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func sendAudio<Result>(
+            request: GRPCCore.ClientRequest<PWApp_SendAudioRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_SendAudioRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_MessageResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: PWApp_MessageService.Method.SendAudio.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "SendSticker" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendStickerRequest` message.
+        ///   - serializer: A serializer for `PWApp_SendStickerRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_MessageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func sendSticker<Result>(
+            request: GRPCCore.ClientRequest<PWApp_SendStickerRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_SendStickerRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_MessageResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: PWApp_MessageService.Method.SendSticker.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "SendContact" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_SendContactRequest` message.
+        ///   - serializer: A serializer for `PWApp_SendContactRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_MessageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func sendContact<Result>(
+            request: GRPCCore.ClientRequest<PWApp_SendContactRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_SendContactRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_MessageResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: PWApp_MessageService.Method.SendContact.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
         /// Call the "SendReaction" method.
         ///
         /// - Parameters:
@@ -964,6 +2104,126 @@ extension PWApp_MessageService {
             try await self.client.unary(
                 request: request,
                 descriptor: PWApp_MessageService.Method.SendReaction.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "EditMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_EditMessageRequest` message.
+        ///   - serializer: A serializer for `PWApp_EditMessageRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_MessageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func editMessage<Result>(
+            request: GRPCCore.ClientRequest<PWApp_EditMessageRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_EditMessageRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_MessageResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: PWApp_MessageService.Method.EditMessage.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "RevokeMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_RevokeMessageRequest` message.
+        ///   - serializer: A serializer for `PWApp_RevokeMessageRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_RemoveMessageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func revokeMessage<Result>(
+            request: GRPCCore.ClientRequest<PWApp_RevokeMessageRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_RevokeMessageRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_RemoveMessageResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_RemoveMessageResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: PWApp_MessageService.Method.RevokeMessage.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "DeleteMessage" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_DeleteMessageRequest` message.
+        ///   - serializer: A serializer for `PWApp_DeleteMessageRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_RemoveMessageResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func deleteMessage<Result>(
+            request: GRPCCore.ClientRequest<PWApp_DeleteMessageRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_DeleteMessageRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_RemoveMessageResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_RemoveMessageResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: PWApp_MessageService.Method.DeleteMessage.descriptor,
+                serializer: serializer,
+                deserializer: deserializer,
+                options: options,
+                onResponse: handleResponse
+            )
+        }
+
+        /// Call the "GetMessageStatus" method.
+        ///
+        /// - Parameters:
+        ///   - request: A request containing a single `PWApp_GetMessageStatusRequest` message.
+        ///   - serializer: A serializer for `PWApp_GetMessageStatusRequest` messages.
+        ///   - deserializer: A deserializer for `PWApp_GetMessageStatusResponse` messages.
+        ///   - options: Options to apply to this RPC.
+        ///   - handleResponse: A closure which handles the response, the result of which is
+        ///       returned to the caller. Returning from the closure will cancel the RPC if it
+        ///       hasn't already finished.
+        /// - Returns: The result of `handleResponse`.
+        internal func getMessageStatus<Result>(
+            request: GRPCCore.ClientRequest<PWApp_GetMessageStatusRequest>,
+            serializer: some GRPCCore.MessageSerializer<PWApp_GetMessageStatusRequest>,
+            deserializer: some GRPCCore.MessageDeserializer<PWApp_GetMessageStatusResponse>,
+            options: GRPCCore.CallOptions = .defaults,
+            onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_GetMessageStatusResponse>) async throws -> Result = { response in
+                try response.message
+            }
+        ) async throws -> Result where Result: Sendable {
+            try await self.client.unary(
+                request: request,
+                descriptor: PWApp_MessageService.Method.GetMessageStatus.descriptor,
                 serializer: serializer,
                 deserializer: deserializer,
                 options: options,
@@ -1144,6 +2404,131 @@ extension PWApp_MessageService.ClientProtocol {
         )
     }
 
+    /// Call the "SendAlbum" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `PWApp_SendAlbumRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func sendAlbum<Result>(
+        request: GRPCCore.ClientRequest<PWApp_SendAlbumRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_SendAlbumResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.sendAlbum(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_SendAlbumRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_SendAlbumResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "SendDocument" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `PWApp_SendDocumentRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func sendDocument<Result>(
+        request: GRPCCore.ClientRequest<PWApp_SendDocumentRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.sendDocument(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_SendDocumentRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_MessageResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "SendAudio" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `PWApp_SendAudioRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func sendAudio<Result>(
+        request: GRPCCore.ClientRequest<PWApp_SendAudioRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.sendAudio(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_SendAudioRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_MessageResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "SendSticker" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `PWApp_SendStickerRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func sendSticker<Result>(
+        request: GRPCCore.ClientRequest<PWApp_SendStickerRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.sendSticker(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_SendStickerRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_MessageResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "SendContact" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `PWApp_SendContactRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func sendContact<Result>(
+        request: GRPCCore.ClientRequest<PWApp_SendContactRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.sendContact(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_SendContactRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_MessageResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
     /// Call the "SendReaction" method.
     ///
     /// - Parameters:
@@ -1164,6 +2549,106 @@ extension PWApp_MessageService.ClientProtocol {
             request: request,
             serializer: GRPCProtobuf.ProtobufSerializer<PWApp_SendReactionRequest>(),
             deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_MessageResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "EditMessage" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `PWApp_EditMessageRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func editMessage<Result>(
+        request: GRPCCore.ClientRequest<PWApp_EditMessageRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.editMessage(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_EditMessageRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_MessageResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "RevokeMessage" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `PWApp_RevokeMessageRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func revokeMessage<Result>(
+        request: GRPCCore.ClientRequest<PWApp_RevokeMessageRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_RemoveMessageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.revokeMessage(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_RevokeMessageRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_RemoveMessageResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "DeleteMessage" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `PWApp_DeleteMessageRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func deleteMessage<Result>(
+        request: GRPCCore.ClientRequest<PWApp_DeleteMessageRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_RemoveMessageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.deleteMessage(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_DeleteMessageRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_RemoveMessageResponse>(),
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetMessageStatus" method.
+    ///
+    /// - Parameters:
+    ///   - request: A request containing a single `PWApp_GetMessageStatusRequest` message.
+    ///   - options: Options to apply to this RPC.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getMessageStatus<Result>(
+        request: GRPCCore.ClientRequest<PWApp_GetMessageStatusRequest>,
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_GetMessageStatusResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        try await self.getMessageStatus(
+            request: request,
+            serializer: GRPCProtobuf.ProtobufSerializer<PWApp_GetMessageStatusRequest>(),
+            deserializer: GRPCProtobuf.ProtobufDeserializer<PWApp_GetMessageStatusResponse>(),
             options: options,
             onResponse: handleResponse
         )
@@ -1329,6 +2814,151 @@ extension PWApp_MessageService.ClientProtocol {
         )
     }
 
+    /// Call the "SendAlbum" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func sendAlbum<Result>(
+        _ message: PWApp_SendAlbumRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_SendAlbumResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<PWApp_SendAlbumRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.sendAlbum(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "SendDocument" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func sendDocument<Result>(
+        _ message: PWApp_SendDocumentRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<PWApp_SendDocumentRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.sendDocument(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "SendAudio" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func sendAudio<Result>(
+        _ message: PWApp_SendAudioRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<PWApp_SendAudioRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.sendAudio(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "SendSticker" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func sendSticker<Result>(
+        _ message: PWApp_SendStickerRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<PWApp_SendStickerRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.sendSticker(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "SendContact" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func sendContact<Result>(
+        _ message: PWApp_SendContactRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<PWApp_SendContactRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.sendContact(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
     /// Call the "SendReaction" method.
     ///
     /// - Parameters:
@@ -1352,6 +2982,122 @@ extension PWApp_MessageService.ClientProtocol {
             metadata: metadata
         )
         return try await self.sendReaction(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "EditMessage" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func editMessage<Result>(
+        _ message: PWApp_EditMessageRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_MessageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<PWApp_EditMessageRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.editMessage(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "RevokeMessage" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func revokeMessage<Result>(
+        _ message: PWApp_RevokeMessageRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_RemoveMessageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<PWApp_RevokeMessageRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.revokeMessage(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "DeleteMessage" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func deleteMessage<Result>(
+        _ message: PWApp_DeleteMessageRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_RemoveMessageResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<PWApp_DeleteMessageRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.deleteMessage(
+            request: request,
+            options: options,
+            onResponse: handleResponse
+        )
+    }
+
+    /// Call the "GetMessageStatus" method.
+    ///
+    /// - Parameters:
+    ///   - message: request message to send.
+    ///   - metadata: Additional metadata to send, defaults to empty.
+    ///   - options: Options to apply to this RPC, defaults to `.defaults`.
+    ///   - handleResponse: A closure which handles the response, the result of which is
+    ///       returned to the caller. Returning from the closure will cancel the RPC if it
+    ///       hasn't already finished.
+    /// - Returns: The result of `handleResponse`.
+    internal func getMessageStatus<Result>(
+        _ message: PWApp_GetMessageStatusRequest,
+        metadata: GRPCCore.Metadata = [:],
+        options: GRPCCore.CallOptions = .defaults,
+        onResponse handleResponse: @Sendable @escaping (GRPCCore.ClientResponse<PWApp_GetMessageStatusResponse>) async throws -> Result = { response in
+            try response.message
+        }
+    ) async throws -> Result where Result: Sendable {
+        let request = GRPCCore.ClientRequest<PWApp_GetMessageStatusRequest>(
+            message: message,
+            metadata: metadata
+        )
+        return try await self.getMessageStatus(
             request: request,
             options: options,
             onResponse: handleResponse

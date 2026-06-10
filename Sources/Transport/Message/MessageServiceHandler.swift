@@ -49,6 +49,107 @@ struct MessageServiceHandler: PWApp_MessageService.ServiceProtocol {
         return ServerResponse(message: MessageMapper.toMessageResponse(sent))
     }
 
+    func sendAlbum(
+        request: ServerRequest<PWApp_SendAlbumRequest>,
+        context: ServerContext
+    ) async throws -> ServerResponse<PWApp_SendAlbumResponse> {
+        let message = request.message
+
+        guard let firstKind = message.items.first?.kind else {
+            throw DomainError(.invalidArgument, "items must contain 2 to 30 media entries")
+                .with("field", "items")
+        }
+
+        guard message.items.allSatisfy({ $0.kind == firstKind }) else {
+            throw DomainError(.invalidArgument, "all album items must share the same media kind")
+                .with("field", "items")
+        }
+
+        let sent = try await messages.sendAlbum(
+            recipient: message.recipient,
+            type: try MessageMapper.toDomain(firstKind),
+            items: message.items.map { item in
+                (
+                    data: Array(item.data),
+                    caption: item.hasCaption ? item.caption : nil,
+                    accessibilityText: item.hasAccessibilityText ? item.accessibilityText : nil
+                )
+            },
+            clientMessageId: message.hasClientMessageID ? message.clientMessageID : nil
+        )
+
+        var response = PWApp_SendAlbumResponse()
+        response.messages = sent.map(MessageMapper.toProto)
+
+        return ServerResponse(message: response)
+    }
+
+    func sendDocument(
+        request: ServerRequest<PWApp_SendDocumentRequest>,
+        context: ServerContext
+    ) async throws -> ServerResponse<PWApp_MessageResponse> {
+        let message = request.message
+
+        let sent = try await messages.sendDocument(
+            recipient: message.recipient,
+            data: Array(message.data),
+            fileName: message.hasFileName ? message.fileName : nil,
+            mimeType: message.hasMimeType ? message.mimeType : nil,
+            caption: message.hasCaption ? message.caption : nil,
+            clientMessageId: message.hasClientMessageID ? message.clientMessageID : nil
+        )
+
+        return ServerResponse(message: MessageMapper.toMessageResponse(sent))
+    }
+
+    func sendAudio(
+        request: ServerRequest<PWApp_SendAudioRequest>,
+        context: ServerContext
+    ) async throws -> ServerResponse<PWApp_MessageResponse> {
+        let message = request.message
+
+        let sent = try await messages.sendAudio(
+            recipient: message.recipient,
+            data: Array(message.data),
+            mimeType: message.hasMimeType ? message.mimeType : nil,
+            clientMessageId: message.hasClientMessageID ? message.clientMessageID : nil
+        )
+
+        return ServerResponse(message: MessageMapper.toMessageResponse(sent))
+    }
+
+    func sendSticker(
+        request: ServerRequest<PWApp_SendStickerRequest>,
+        context: ServerContext
+    ) async throws -> ServerResponse<PWApp_MessageResponse> {
+        let message = request.message
+
+        let sent = try await messages.sendSticker(
+            recipient: message.recipient,
+            data: Array(message.data),
+            emojis: message.emojis,
+            accessibilityText: message.hasAccessibilityText ? message.accessibilityText : nil,
+            clientMessageId: message.hasClientMessageID ? message.clientMessageID : nil
+        )
+
+        return ServerResponse(message: MessageMapper.toMessageResponse(sent))
+    }
+
+    func sendContact(
+        request: ServerRequest<PWApp_SendContactRequest>,
+        context: ServerContext
+    ) async throws -> ServerResponse<PWApp_MessageResponse> {
+        let message = request.message
+
+        let sent = try await messages.sendContact(
+            recipient: message.recipient,
+            contacts: message.contacts.map(MessageMapper.toDomain),
+            clientMessageId: message.hasClientMessageID ? message.clientMessageID : nil
+        )
+
+        return ServerResponse(message: MessageMapper.toMessageResponse(sent))
+    }
+
     func sendReaction(
         request: ServerRequest<PWApp_SendReactionRequest>,
         context: ServerContext
@@ -62,6 +163,68 @@ struct MessageServiceHandler: PWApp_MessageService.ServiceProtocol {
         )
 
         return ServerResponse(message: MessageMapper.toMessageResponse(reacted))
+    }
+
+    func editMessage(
+        request: ServerRequest<PWApp_EditMessageRequest>,
+        context: ServerContext
+    ) async throws -> ServerResponse<PWApp_MessageResponse> {
+        let message = request.message
+
+        let edited = try await messages.editMessage(
+            messageId: message.messageID,
+            text: message.text,
+            clientMessageId: message.hasClientMessageID ? message.clientMessageID : nil
+        )
+
+        return ServerResponse(message: MessageMapper.toMessageResponse(edited))
+    }
+
+    func revokeMessage(
+        request: ServerRequest<PWApp_RevokeMessageRequest>,
+        context: ServerContext
+    ) async throws -> ServerResponse<PWApp_RemoveMessageResponse> {
+        let message = request.message
+
+        let removed = try await messages.revokeMessage(
+            messageId: message.messageID,
+            clientMessageId: message.hasClientMessageID ? message.clientMessageID : nil
+        )
+
+        var response = PWApp_RemoveMessageResponse()
+        response.messageID = message.messageID
+        response.removed = removed
+
+        return ServerResponse(message: response)
+    }
+
+    func deleteMessage(
+        request: ServerRequest<PWApp_DeleteMessageRequest>,
+        context: ServerContext
+    ) async throws -> ServerResponse<PWApp_RemoveMessageResponse> {
+        let message = request.message
+
+        let removed = try await messages.deleteMessage(
+            messageId: message.messageID,
+            clientMessageId: message.hasClientMessageID ? message.clientMessageID : nil
+        )
+
+        var response = PWApp_RemoveMessageResponse()
+        response.messageID = message.messageID
+        response.removed = removed
+
+        return ServerResponse(message: response)
+    }
+
+    func getMessageStatus(
+        request: ServerRequest<PWApp_GetMessageStatusRequest>,
+        context: ServerContext
+    ) async throws -> ServerResponse<PWApp_GetMessageStatusResponse> {
+        let status = try await messages.getMessageStatus(
+            messageId: request.message.messageID
+        )
+
+        return ServerResponse(message: MessageMapper.toProto(status))
     }
 
     func getMessage(
