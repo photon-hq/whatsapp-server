@@ -117,6 +117,27 @@ final class ChatStorageMessageMutationReadbackTests: XCTestCase {
         XCTAssertEqual(result?.messageId, "245033018110026@lid_status-one-image-stanza_1_0")
     }
 
+    func testFindsSentMediaInLidNamedSessionWhenRecipientCannotPhoneMatch() async throws {
+        // Regression: modern @lid sessions whose partner name is not a phone
+        // number (e.g. a named contact or "message yourself") can never be
+        // matched by a phone recipient. The media readback must still find the
+        // freshly uploaded row instead of timing out.
+        let path = try makeChatStorageDatabase()
+        let database = try ChatStorageDatabase(path: path)
+        let readback = ChatStorageMessageMutationReadback(database: database)
+
+        let result = try await readback.sentMedia(
+            matching: SentMediaReadbackQuery(
+                recipient: "8613418786371",
+                type: .image,
+                caption: "lid named image caption",
+                notBefore: Date(timeIntervalSince1970: 978_307_200 + 18)
+            )
+        )
+
+        XCTAssertEqual(result?.messageId, "233419325866174@lid_lid-named-image-stanza_1_0")
+    }
+
     func testRejectsSentMediaUntilSuccessfulUploadSignalAppears() async throws {
         let path = try makeChatStorageDatabase()
         let database = try ChatStorageDatabase(path: path)
@@ -259,7 +280,9 @@ final class ChatStorageMessageMutationReadbackTests: XCTestCase {
             try db.execute(
                 sql: """
                     INSERT INTO ZWACHATSESSION (Z_PK, ZCONTACTJID, ZPARTNERNAME)
-                    VALUES (1, '245033018110026@lid', '+1 (555) 161-9824')
+                    VALUES
+                        (1, '245033018110026@lid', '+1 (555) 161-9824'),
+                        (2, '233419325866174@lid', 'Self')
                     """
             )
 
@@ -270,7 +293,8 @@ final class ChatStorageMessageMutationReadbackTests: XCTestCase {
                         (20, 42, 2, 'Media/demo.jpg', 'image caption', 'https://mmg.whatsapp.net/demo.jpg', NULL),
                         (21, 100, 1, 'Media/pending.mp4', 'pending video caption', NULL, NULL),
                         (22, 0, NULL, NULL, NULL, NULL, ?),
-                        (23, 42, 2, 'Media/status-one.jpg', 'uploaded status one image caption', 'https://mmg.whatsapp.net/status-one.jpg', NULL)
+                        (23, 42, 2, 'Media/status-one.jpg', 'uploaded status one image caption', 'https://mmg.whatsapp.net/status-one.jpg', NULL),
+                        (24, 42, 2, 'Media/lid-named.jpg', 'lid named image caption', 'https://mmg.whatsapp.net/lid-named.jpg', NULL)
                     """,
                 arguments: [Data("parent-stanza quoted text".utf8)]
             )
@@ -296,7 +320,8 @@ final class ChatStorageMessageMutationReadbackTests: XCTestCase {
                         (15, 15, 1, 'failed-stanza', 'failed text', 1, 6, 2, 0, 15, 15, NULL, NULL, NULL, NULL, NULL, NULL),
                         (16, 16, 1, 'pending-video-stanza', NULL, 1, 9, 0, 2, 16, 16, NULL, NULL, NULL, 21, NULL, NULL),
                         (17, 17, 1, 'metadata-reply-stanza', 'metadata reply text', 1, 6, 0, 0, 17, 17, NULL, NULL, NULL, 22, NULL, NULL),
-                        (18, 18, 1, 'status-one-image-stanza', NULL, 1, 1, 0, 1, 18, 18, NULL, NULL, NULL, 23, NULL, NULL)
+                        (18, 18, 1, 'status-one-image-stanza', NULL, 1, 1, 0, 1, 18, 18, NULL, NULL, NULL, 23, NULL, NULL),
+                        (19, 19, 2, 'lid-named-image-stanza', NULL, 1, 8, 0, 1, 19, 19, NULL, NULL, NULL, 24, NULL, NULL)
                     """
             )
         }

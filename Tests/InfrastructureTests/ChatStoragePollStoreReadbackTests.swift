@@ -23,6 +23,25 @@ final class ChatStoragePollStoreReadbackTests: XCTestCase {
         XCTAssertNotNil(result?.digest)
     }
 
+    func testCreatedPollIgnoresRecipientMismatch() async throws {
+        // Regression: createdPoll must identify the poll solely by its
+        // authoritative poll id (contactJid + stanzaId + isFromMe). A phone
+        // recipient that cannot match a modern @lid session must not cause a
+        // false timeout.
+        let path = try makeChatStorageDatabase()
+        let database = try ChatStorageDatabase(path: path)
+        let readback = ChatStoragePollStore(database: database)
+
+        let result = try await readback.createdPoll(
+            matching: PollCreationReadbackQuery(
+                pollId: "48761485131844@lid_3B40A0A41C85DB037EEA_1_0",
+                recipient: "00000000"
+            )
+        )
+
+        XCTAssertEqual(result?.pollId, "48761485131844@lid_3B40A0A41C85DB037EEA_1_0")
+    }
+
     func testDetectsPollUpdateDigestChange() async throws {
         let path = try makeChatStorageDatabase()
         let pool = try DatabasePool(path: path)

@@ -24,9 +24,11 @@ package struct ChatStoragePollStore: GetPoll, PollMutationReadback, Sendable {
     package func createdPoll(
         matching query: PollCreationReadbackQuery
     ) async throws -> PollMutationReadbackResult? {
-        guard let row = try await pollRow(pollId: query.pollId),
-              row.matches(recipient: query.recipient)
-        else {
+        // `pollRow` already matches on the authoritative poll id
+        // (contactJid + stanzaId + isFromMe) returned by the helper, so an extra
+        // phone-recipient guard only produces false timeouts for modern
+        // @lid-addressed sessions (e.g. named contacts / message-yourself).
+        guard let row = try await pollRow(pollId: query.pollId) else {
             return nil
         }
 

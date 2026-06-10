@@ -67,7 +67,14 @@ package struct ChatStorageMessageMutationReadback: MessageMutationReadback, Send
             )
 
             return rows.first { row in
-                row.matches(recipient: query.recipient)
+                // `send-media` returns no message identifier, so the row is
+                // identified by type + caption + recency (notBefore). The phone
+                // recipient is only a best-effort disambiguator: modern @lid
+                // sessions whose partner name is not a phone number can never be
+                // matched, so requiring it would produce false timeouts for the
+                // common "message yourself" / named-contact case.
+                (row.matches(recipient: query.recipient)
+                    || !row.recipientCanMatchByPhone)
                     && row.hasSuccessfulMediaSendSignal
                     && row.hasUploadedMedia
                     && row.mediaCaptionMatches(query.caption)

@@ -202,6 +202,13 @@ struct ChatStorageMessageRecord: Decodable, FetchableRecord, Sendable {
         ).matches(recipient)
     }
 
+    var recipientCanMatchByPhone: Bool {
+        ChatStorageRecipient(
+            contactJid: contactJid,
+            partnerName: partnerName
+        ).canMatchByPhone
+    }
+
     func mediaCaptionMatches(_ caption: String?) -> Bool {
         guard let caption, !caption.isEmpty else {
             return true

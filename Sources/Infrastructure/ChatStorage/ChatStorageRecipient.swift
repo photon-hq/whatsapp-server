@@ -25,6 +25,19 @@ struct ChatStorageRecipient {
             || partnerPhone == recipient
     }
 
+    /// Modern WhatsApp stores most 1:1 contacts under an opaque `@lid` session
+    /// whose phone number is not recoverable from ChatStorage. When the contact
+    /// is `@lid`-addressed and its partner name carries no phone digits, a phone
+    /// `recipient` can never be matched, so callers must not treat a failed
+    /// recipient match as proof the row belongs to a different chat.
+    var canMatchByPhone: Bool {
+        if contactJid.hasSuffix("@s.whatsapp.net") || contactJid.hasSuffix("@g.us") {
+            return true
+        }
+
+        return partnerPhone != nil
+    }
+
     private var partnerPhone: String? {
         guard let phone = partnerName?.filter(\.isNumber),
               !phone.isEmpty
