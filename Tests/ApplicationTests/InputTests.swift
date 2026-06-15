@@ -54,6 +54,43 @@ final class InputTests: XCTestCase {
         }
     }
 
+    func testPhoneOrJidAcceptsDigitsAndJidForms() throws {
+        XCTAssertEqual(try RecipientInput.phoneOrJid(" 11234567890 "), "11234567890")
+        XCTAssertEqual(
+            try RecipientInput.phoneOrJid(" 233419325866174@lid "),
+            "233419325866174@lid"
+        )
+        XCTAssertEqual(
+            try RecipientInput.phoneOrJid("11234567890@s.whatsapp.net"),
+            "11234567890@s.whatsapp.net"
+        )
+        XCTAssertEqual(
+            try RecipientInput.phoneOrJid("120363012345678901@g.us"),
+            "120363012345678901@g.us"
+        )
+    }
+
+    func testPhoneOrJidRejectsNonDigitNonJidValue() {
+        XCTAssertThrowsError(try RecipientInput.phoneOrJid("not-a-jid")) { error in
+            guard let domainError = error as? DomainError else {
+                return XCTFail("expected DomainError")
+            }
+
+            XCTAssertEqual(domainError.code, .invalidArgument)
+            XCTAssertEqual(domainError.context["field"], "recipient")
+        }
+    }
+
+    func testPhoneOrJidRejectsEmptyJidLocalPart() {
+        XCTAssertThrowsError(try RecipientInput.phoneOrJid("@lid")) { error in
+            guard let domainError = error as? DomainError else {
+                return XCTFail("expected DomainError")
+            }
+
+            XCTAssertEqual(domainError.code, .invalidArgument)
+        }
+    }
+
     func testRequiredTextTrimsWhitespace() throws {
         let text = try TextInput.trimmedNonEmpty("  hello  ", field: "question")
 

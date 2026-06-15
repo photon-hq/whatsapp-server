@@ -119,7 +119,7 @@ private extension MessagePageInput {
         _ requested: String,
         token: MessagePageTokenCodec.Payload?
     ) throws -> String {
-        let recipient = try RecipientInput.phone(requested)
+        let recipient = try RecipientInput.phoneOrJid(requested)
 
         if let token {
             guard recipient == token.recipient else {
