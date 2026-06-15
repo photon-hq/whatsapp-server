@@ -39,7 +39,7 @@ package struct HelperCreateGroup: CreateGroup, Sendable {
         let response = try await client.sendCommand(action: "create-group", data: data)
         try HelperJSON.requireAccepted(response)
 
-        let groupJID = try HelperJSON.identifier(
+        let rawGroupJID = try HelperJSON.identifier(
             response["groupJID"] ?? response["identifier"],
             field: "groupJID",
             message: "Helper did not return a group JID"
@@ -49,10 +49,21 @@ package struct HelperCreateGroup: CreateGroup, Sendable {
             && (response["updated"]?.objectValue?["avatar"]?.boolValue ?? false)
 
         return GroupCreationResult(
-            groupJID: groupJID,
+            groupJID: Self.normalizeJID(rawGroupJID),
             accepted: true,
             avatarUpdated: avatarUpdated
         )
+    }
+
+    /// The helper returns the group JID via `WAJID.description`, which wraps the
+    /// value in angle brackets (e.g. `<120363...@g.us>`). Strip a single matching
+    /// pair so callers receive a clean `<id>@g.us` JID.
+    private static func normalizeJID(_ value: String) -> String {
+        guard value.count >= 2, value.hasPrefix("<"), value.hasSuffix(">") else {
+            return value
+        }
+
+        return String(value.dropFirst().dropLast())
     }
 
 }

@@ -59,6 +59,20 @@ final class GroupHelperAdapterTests: XCTestCase {
         XCTAssertTrue(result.avatarUpdated)
     }
 
+    func testCreateGroupStripsAngleBracketsFromGroupJID() async throws {
+        let transport = RecordingTransport(response: [
+            "accepted": .bool(true),
+            "groupJID": .string("<120363410721190399@g.us>")
+        ])
+        let adapter = HelperCreateGroup(client: transport)
+
+        let result = try await adapter.createGroup(
+            CreateGroupCommand(subject: "Team", participants: ["8613800138000"])
+        )
+
+        XCTAssertEqual(result.groupJID, "120363410721190399@g.us")
+    }
+
     func testCreateGroupOmitsOptionalFields() async throws {
         let transport = RecordingTransport(response: [
             "accepted": .bool(true),
