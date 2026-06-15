@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package photon.whatsapp.v1;
+
+option swift_prefix = "PWApp_";
+
+
+service GroupService {
+
+  rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse);
+
+}
+
+
+message CreateGroupRequest {
+
+  // Group name. Required, non-empty after trimming.
+  string subject = 1;
+
+  // Member phone numbers with country code, digits only, no '+'. At least one.
+  repeated string participants = 2;
+
+  // Optional group description.
+  optional string group_description = 3;
+
+  // Optional group avatar image bytes (JPEG or PNG). Sent as base64 to the helper.
+  optional bytes avatar = 4;
+
+  // Optional disappearing-message timer in seconds.
+  // Allowed: 0 (off), 86400 (24h), 604800 (7d), 7776000 (90d).
+  optional uint32 disappearing_duration = 5;
+
+  // Only admins can edit group info.
+  bool restrict_edit_info = 6;
+
+  // Only admins can send messages (announcement-only group).
+  bool restrict_send_messages = 7;
+
+  // Only admins can add members.
+  bool restrict_add_members = 8;
+
+  // Only admins can share the invite link.
+  bool restrict_invite_link = 9;
+
+  // New members require admin approval to join.
+  bool require_member_approval = 10;
+
+  // Optional client correlation id, echoed back verbatim by the helper.
+  optional string temp_guid = 11;
+
+}
+
+
+message CreateGroupResponse {
+
+  // The created group JID (<id>@g.us).
+  string group_jid = 1;
+
+  // True once WhatsApp accepts the create request.
+  bool accepted = 2;
+
+  // Whether the supplied avatar was applied (only meaningful when avatar was set).
+  bool avatar_updated = 3;
+
+}

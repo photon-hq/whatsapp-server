@@ -126,6 +126,9 @@ final class AppRuntime: Sendable {
                     client: helperClient,
                     stagingDirectory: config.mediaStagingDirectory
                 )
+            ),
+            group: GroupService(
+                createGroup: HelperCreateGroup(client: helperClient)
             )
         )
     }
