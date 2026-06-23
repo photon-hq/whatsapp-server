@@ -1,5 +1,5 @@
 {
-  "originHash" : "a7d495059fce9e224331e1490bbeeb7c63319552b0c61ecf79d354ac01330bcd",
+  "originHash" : "75f279f578eb28bc00158be0c930f3d878f5bcf36a47b2ce9de10911a07ecb37",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "3a5b74a58782c3b4c1f0bc75e9b67b10c2494e8f",
         "version" : "1.33.1"
+      }
+    },
+    {
+      "identity" : "base32",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Jarema/Base32",
+      "state" : {
+        "revision" : "7f723a2e55f1c76e7c79263aebf89dbfcd58e77d",
+        "version" : "0.10.2"
       }
     },
     {
@@ -53,6 +62,24 @@
       "state" : {
         "revision" : "8723cf856dc23d9c2fad4d874e7b9ed3254acf03",
         "version" : "2.3.0"
+      }
+    },
+    {
+      "identity" : "nats.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nats-io/nats.swift.git",
+      "state" : {
+        "revision" : "436ca4a8cbbaeaeb5d21c14e23647d194774e6da",
+        "version" : "0.4.0"
+      }
+    },
+    {
+      "identity" : "nkeys.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nats-io/nkeys.swift.git",
+      "state" : {
+        "revision" : "88a1778b06b5631506ca90ebb593df0431c8a9f3",
+        "version" : "0.2.0"
       }
     },
     {
@@ -218,6 +245,15 @@
       }
     },
     {
+      "identity" : "swift-nuid",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Jarema/swift-nuid.git",
+      "state" : {
+        "revision" : "d9072de7548b934d198ec40a89adae4f2fbd8c48",
+        "version" : "0.3.0"
+      }
+    },
+    {
       "identity" : "swift-numerics",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-numerics.git",
@@ -260,6 +296,15 @@
       "state" : {
         "revision" : "9829955b385e5bb88128b73f1b8389e9b9c3191a",
         "version" : "2.11.0"
+      }
+    },
+    {
+      "identity" : "swift-sodium",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jedisct1/swift-sodium.git",
+      "state" : {
+        "revision" : "cfd195c76882aa9b997560ca7cb95d72fbf5db00",
+        "version" : "0.11.0"
       }
     },
     {

@@ -19,6 +19,7 @@ let package = Package(
         .package(url: "https://github.com/swift-otel/swift-otel.git", from: "1.0.0"),
         .package(url: "https://github.com/grpc/grpc-swift-extras.git", from: "2.0.0"),
         .package(url: "https://github.com/apple/swift-distributed-tracing.git", from: "1.2.0"),
+        .package(url: "https://github.com/nats-io/nats.swift.git", from: "0.1.0"),
     ],
     targets: [
         .target(
@@ -43,6 +44,7 @@ let package = Package(
             dependencies: [
                 "Domain",
                 .product(name: "GRDB", package: "GRDB.swift"),
+                .product(name: "Nats", package: "nats.swift"),
                 .product(name: "NIOCore", package: "swift-nio"),
                 .product(name: "NIOPosix", package: "swift-nio"),
             ],

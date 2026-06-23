@@ -33,6 +33,11 @@ struct AppConfiguration: Sendable {
     let otelEndpoint: String?
     let otelServiceName: String
     let otelSamplingRatio: Double
+    let natsEnabled: Bool
+    let natsURL: URL
+    let natsSubjectPrefix: String
+    let natsPublisherCursor: String
+    let natsDeviceID: String?
 
     static func fromEnvironment(
         _ environment: [String: String] = ProcessInfo.processInfo.environment
@@ -143,7 +148,18 @@ struct AppConfiguration: Sendable {
             otelSamplingRatio: try parseRatio(
                 environment["OTEL_TRACES_SAMPLER_RATIO"],
                 key: "OTEL_TRACES_SAMPLER_RATIO"
-            ) ?? 1.0
+            ) ?? 1.0,
+            natsEnabled: try parseBool(
+                environment["NATS_ENABLED"],
+                key: "NATS_ENABLED"
+            ) ?? false,
+            natsURL: try parseURL(
+                environment["NATS_URL"],
+                key: "NATS_URL"
+            ) ?? URL(string: "nats://localhost:4222")!,
+            natsSubjectPrefix: nonEmpty(environment["NATS_SUBJECT_PREFIX"]) ?? "whatsapp.events",
+            natsPublisherCursor: nonEmpty(environment["NATS_PUBLISHER_CURSOR"]) ?? "nats_event_publisher",
+            natsDeviceID: nonEmpty(environment["NATS_DEVICE_ID"])
         )
     }
 
@@ -202,6 +218,11 @@ struct AppConfiguration: Sendable {
             "otel_endpoint": "\(otelEndpoint ?? "disabled")",
             "otel_service_name": "\(otelServiceName)",
             "otel_sampling_ratio": "\(otelSamplingRatio)",
+            "nats_enabled": "\(natsEnabled)",
+            "nats_url": "\(natsURL.absoluteString)",
+            "nats_subject_prefix": "\(natsSubjectPrefix)",
+            "nats_publisher_cursor": "\(natsPublisherCursor)",
+            "nats_device_id": natsDeviceID != nil ? "<redacted>" : "none",
         ]
     }
 
@@ -312,6 +333,21 @@ struct AppConfiguration: Sendable {
         }
 
         return parsed
+    }
+
+    private static func parseURL(
+        _ value: String?,
+        key: String
+    ) throws -> URL? {
+        guard let value = nonEmpty(value) else {
+            return nil
+        }
+
+        guard let url = URL(string: value), url.scheme != nil, url.host != nil else {
+            throw AppConfigurationError.invalid(key, "must be an absolute URL, got \(value)")
+        }
+
+        return url
     }
 
 }

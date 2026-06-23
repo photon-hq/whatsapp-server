@@ -12,6 +12,7 @@ final class AppRuntime: Sendable {
     private let logger: Logger
     private let helperClient: HelperUDSClient
     private let eventObserver: ChatStorageEventObserver
+    private let natsEventRelay: NATSEventRelay?
     private let sharedInstanceChecker: any SharedInstanceChecking
 
     let services: GRPCTransportServer.Services
@@ -54,6 +55,22 @@ final class AppRuntime: Sendable {
             pollingInterval: .seconds(config.chatStoragePollingIntervalSeconds),
             logger: Logger(label: "ChatStorageEventObserver")
         )
+
+        natsEventRelay =
+            if config.natsEnabled {
+                NATSEventRelay(
+                    configuration: .init(
+                        url: config.natsURL,
+                        subjectPrefix: config.natsSubjectPrefix,
+                        cursorName: config.natsPublisherCursor,
+                        deviceID: config.natsDeviceID
+                    ),
+                    eventStreaming: eventStream,
+                    logger: Logger(label: "NATSEventRelay")
+                )
+            } else {
+                nil
+            }
 
         self.auth = try Self.makeAuthDependencies(
             config: config,
@@ -139,9 +156,16 @@ final class AppRuntime: Sendable {
 
         try await eventObserver.startObserving()
         logger.info("ChatStorage observer started")
+
+        await natsEventRelay?.start()
+        if natsEventRelay != nil {
+            logger.info("NATS event relay started")
+        }
     }
 
     func shutdown() async {
+        await natsEventRelay?.stop()
+
         do {
             try await eventObserver.stopObserving()
         } catch {
